@@ -9,7 +9,7 @@ def log(log: str):
     sys.stdout.flush()
 
 url_base = input(
-    "Veuillez rentrez l'url de base (ex : https://wall.alphacoders.com/search.php?search=sword+art+online). > ")
+    "Veuillez rentrez l'url de base (ex : https://wall.alphacoders.com/search.php?search=sword+art+online). > ").replace(' ', '')
 path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/jean_eude/test/). > ")
 path = path if path[-1] == '/' else path + '/'
 
@@ -30,9 +30,15 @@ for link in all_links:
     href = str(link.get('href'))
 
     if href.find('page') >= 0:
-        pages_list.append(href.split(f'{page_char}page=')[1])
-
-page_number = pages_list[int(max(pages_list))]
+        try:
+            pages_list.append(href.split('&page=')[1])
+        except:
+            pages_list.append(href.split(f'?page=')[1])
+try:
+    page_number = pages_list[int(max(pages_list))]
+except:
+    log("Vous n'avez pas accès au site.")
+    sys.exit()
 
 log(f'{str(page_number)} pages trouvées.')
 
