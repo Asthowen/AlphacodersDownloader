@@ -4,12 +4,22 @@ import sys
 import os
 
 
+def clear_previous_line():
+    sys.stdout.write("\033[F")
+    sys.stdout.write("\033[K")
+
+
 def log(log: str):
-    sys.stdout.write('\r' + log)
-    sys.stdout.flush()
+    clear_previous_line()
+    print(log)
+
 
 url_base = input(
-    "Veuillez rentrez l'url de base (ex : https://wall.alphacoders.com/search.php?search=sword+art+online). > ").replace(' ', '')
+    "Veuillez rentrez l'url de base (ex : https://wall.alphacoders.com/search.php?search=sword+art+online or https://mobile.alphacoders.com/by-sub-category/227264). > ").replace(
+    ' ', '')
+
+clear_previous_line()
+
 path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/jean_eude/test/). > ")
 path = path if path[-1] == '/' else path + '/'
 
@@ -34,13 +44,14 @@ for link in all_links:
             pages_list.append(href.split('&page=')[1])
         except:
             pages_list.append(href.split(f'?page=')[1])
+
 try:
     page_number = pages_list[int(max(pages_list))]
 except:
     log("Vous n'avez pas accès au site.")
     sys.exit()
 
-log(f'{str(page_number)} pages trouvées.')
+log(f'Pages trouvées : {str(page_number)}.')
 
 page_check = 1
 
@@ -52,7 +63,7 @@ while page_check < int(page_number) + 1:
 
 images_list = []
 
-log(f'{str(page_number)} Lancement de la récupération des liens de toutes les images.')
+log('Lancement de la récupération des liens de toutes les images.')
 
 counter_page_link = 1
 
@@ -71,7 +82,7 @@ for page_link in all_pages:
             href = href.replace(images_name_file_thumb, '') + images_name_file
 
             images_list.append([href, images_name_file])
-            log(f'{str(counter_page_link)} liens trouvé.')
+            log(f'Liens trouvé : {str(counter_page_link)}.')
 
             counter_page_link += 1
 
@@ -80,7 +91,6 @@ image_list_len = len(images_list)
 log(f'Récupération des images terminé ({str(image_list_len)} images trouvées).')
 
 log('Lancement du téléchargement des images.')
-
 
 counter = 1
 
@@ -95,4 +105,3 @@ for image_link in images_list:
     counter += 1
 
 log('Téléchargement terminé !')
-
