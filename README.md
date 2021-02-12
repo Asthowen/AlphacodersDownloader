@@ -15,6 +15,7 @@ You must download and unzip script file : `https://github.com/Asthowen/Alphacode
 Execute the script : `python3 Main.py`
 
 Enter a link : https://mobile.alphacoders.com/by-sub-category/227264 or https://wall.alphacoders.com/search.php?search=SAO for example. This type of link doesn't work : https://mobile.alphacoders.com/by-device/373/Galaxy-J3-Wallpapers?search=SAO.
+<br>
 Enter download path : /home/jean_eude/test/ for example.
 
 ## Author
