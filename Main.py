@@ -3,15 +3,21 @@ import requests
 import sys
 import os
 
-url_base = input("Veuillez rentrez l'url de base (ex : https://wall.alphacoders.com/search.php?search=sword+art+online). > ")
+
+def log(log: str):
+    sys.stdout.write('\r' + log)
+    sys.stdout.flush()
+
+
+url_base = input(
+    "Veuillez rentrez l'url de base (ex : https://wall.alphacoders.com/search.php?search=sword+art+online). > ")
 path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/jean_eude/test/). > ")
 path = path if path[-1] == '/' else path + '/'
 
 if os.path.exists(path) is False:
     os.mkdir(path)
 
-sys.stdout.write('\r' + 'Récupération du nombre de pages.')
-sys.stdout.flush()
+log('Récupération du nombre de pages.')
 
 soup = BeautifulSoup(requests.get(url_base + '&page=1').content, "html.parser")
 all_links = soup.find_all("a")
@@ -27,8 +33,7 @@ for link in all_links:
 
 page_number = pages_list[int(max(pages_list))]
 
-sys.stdout.write('\r' + str(page_number) + " pages trouvées.")
-sys.stdout.flush()
+log(f'{str(page_number)} pages trouvées.')
 
 page_check = 1
 
@@ -38,11 +43,9 @@ while page_check < int(page_number) + 1:
     all_pages.append(url_base + '&page=' + str(page_check))
     page_check += 1
 
-
 images_list = []
 
-sys.stdout.write('\r' + str(page_number) + " Lancement de la récupération des liens de toutes les images.")
-sys.stdout.flush()
+log(f'{str(page_number)} Lancement de la récupération des liens de toutes les images.')
 
 counter_page_link = 1
 
@@ -61,19 +64,16 @@ for page_link in all_pages:
             href = href.replace(images_name_file_thumb, '') + images_name_file
 
             images_list.append([href, images_name_file])
-            sys.stdout.write('\r' + str(counter_page_link) + " liens trouvé.")
-            sys.stdout.flush()
+            log(f'{str(counter_page_link)} liens trouvé.')
 
             counter_page_link += 1
 
 image_list_len = len(images_list)
 
-sys.stdout.write('\r' + f'Récupération des images terminé ({images_list} images trouvées).')
-sys.stdout.flush()
+log(f'Récupération des images terminé ({str(image_list_len)} images trouvées).')
 
+log('Lancement du téléchargement des images.')
 
-sys.stdout.write('\r' + 'Lancement du téléchargement des images.')
-sys.stdout.flush()
 
 counter = 1
 
@@ -87,5 +87,5 @@ for image_link in images_list:
     sys.stdout.flush()
     counter += 1
 
-sys.stdout.write('\r' + 'Téléchargement terminé !')
-sys.stdout.flush()
+log('Téléchargement terminé !')
+
