@@ -83,8 +83,8 @@ for image_link in images_list:
         with open(path + image_link[1], 'wb') as out_file:
             out_file.write(response)
 
-    sys.stdout.write('\r' + f"{str(counter)}/{str(image_list_len)}")
-    sys.stdout.flush()
+    log(f'{str(counter)}/{str(image_list_len)}')
+
     counter += 1
 
 log('Téléchargement terminé !')
