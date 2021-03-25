@@ -6,7 +6,7 @@ AlphacodersWallpaperDownloader is a wallpaper downloader for the website: https:
 * [**Requests**](https://pypi.org/project/requests/)
 
 ### Install prerequisites
-You must install this command for install dependencies: 
+You must run this command for install dependencies: 
 <br>
 `pip3 install bs4 requests`
 
