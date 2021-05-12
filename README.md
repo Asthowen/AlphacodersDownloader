@@ -1,14 +1,17 @@
 # AlphacodersWallpaperDownloader
-AlphacodersWallpaperDownloader is a wallpaper downloader for the website: https://alphacoders.com/.
+
+[![forthebadge made-with-python](https://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/) [![forthebadge](https://forthebadge.com/images/badges/uses-git.svg)](https://github.com/)
+
+AlphacodersWallpaperDownloader is a asynchronous wallpaper downloader for the website: https://alphacoders.com/.
 
 ## Made with
 * [**BeautifulSoup4**](https://pypi.org/project/bs4/)
-* [**Requests**](https://pypi.org/project/requests/)
+* [**aiohttp**](https://pypi.org/project/aiohttp/)
 
 ### Install prerequisites
 You must run this command for install dependencies: 
 <br>
-`pip3 install bs4 requests`
+`pip3 install bs4 aiohttp`
 
 ## Use
 Clone the repo: 
