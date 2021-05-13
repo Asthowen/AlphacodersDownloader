@@ -13,8 +13,7 @@ class Main:
         self.url = url
         self.path = path if path[-1] == '/' else path + '/'
 
-        self.client_session = ''
-
+        self.client_session = None
         self.images_list = []
         self.links_len = 0
         self.links_got = 0
@@ -22,7 +21,8 @@ class Main:
         self.image_downloaded = 0
 
     async def stop(self):
-        await self.client_session.close()
+        if self.client_session is not None:
+            await self.client_session.close()
 
     @staticmethod
     def __progress_bar(
@@ -31,17 +31,14 @@ class Main:
             prefix: str
     ):
         f = int(100 * iteration // total)
-        bar = '█' * f + ' ' * (100 - f)
 
-        print(f'\r{prefix} [{bar}] {str(round(100 * (iteration / float(total)), 2))}%', end="")
+        print(f"\r{prefix} [{'█' * f + ' ' * (100 - f)}] {str(round(100 * (iteration / float(total)), 2))}%", end='')
+
         if iteration == total:
             print()
 
     @staticmethod
-    async def __limit_task(
-            number: int,
-            *tasks
-    ):
+    async def __limit_task(number: int, *tasks):
         semaphore = asyncio.Semaphore(number)
 
         async def sem_task(task):
@@ -54,10 +51,10 @@ class Main:
         async with self.client_session.get(url) as r:
             links = BeautifulSoup(
                 await r.text(),
-                "html.parser"
+                'html.parser'
             )
 
-        get_all_img_tags = links.findAll("img")
+        get_all_img_tags = links.findAll('img')
 
         for link in get_all_img_tags:
             href = str(link.get('src'))
@@ -67,9 +64,7 @@ class Main:
                 images_name_file_thumb = images_link_list_split[len(images_link_list_split) - 1]
                 images_name_file = images_name_file_thumb.split('-')[len(images_name_file_thumb.split('-')) - 1]
 
-                href = href.replace(images_name_file_thumb, '') + images_name_file
-
-                self.images_list.append([href, images_name_file])
+                self.images_list.append([href.replace(images_name_file_thumb, '') + images_name_file, images_name_file])
 
         self.links_got += 1
         self.__progress_bar(self.links_got, self.links_len, 'Récupération des liens des images')
@@ -91,13 +86,13 @@ class Main:
             os.mkdir(self.path)
 
         pages_list = []
-        page_char = "&" if "https://mobile.alphacoders.com/" not in self.url else "?"
+        page_char = '&' if 'https://mobile.alphacoders.com/' not in self.url else '?'
 
         async with self.client_session.get(f'{self.url}{page_char}page=1') as r:
             all_links = BeautifulSoup(
                 await r.text(),
-                "html.parser"
-            ).find_all("a", href=True)
+                'html.parser'
+            ).find_all('a', href=True)
 
         for link in all_links:
             href = str(link.get('href'))
@@ -106,7 +101,7 @@ class Main:
                 try:
                     pages_list.append(href.split('&page=')[1])
                 except IndexError:
-                    pages_list.append(href.split(f'?page=')[1])
+                    pages_list.append(href.split('?page=')[1])
 
         page_number = pages_list[int(max(pages_list))]
 
@@ -126,9 +121,11 @@ class Main:
 
 async def main():
     client = None
+
     try:
         url_base = input(
-            "Veuillez rentrez l'url de téléchargement (ex : https://wall.alphacoders.com/search.php?search=sword+art+online). > "
+            "Veuillez rentrez l'url de téléchargement (ex : "
+            'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
         ).replace(' ', '')
 
         path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/asthowen/download/). > ")
@@ -138,12 +135,10 @@ async def main():
         await client.start()
     except KeyboardInterrupt:
         if client is not None:
-            await client.close()
+            await client.stop()
     except FileNotFoundError:
         print("Ce dossier n'existe pas.")
 
 
 if __name__ == '__main__':
-    asyncio.run(
-        main()
-    )
+    asyncio.run(main())
