@@ -1,8 +1,16 @@
-# AlphacodersWallpaperDownloader
-
-[![forthebadge made-with-python](https://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/) [![forthebadge](https://forthebadge.com/images/badges/uses-git.svg)](https://github.com/)
-
-AlphacodersWallpaperDownloader is a asynchronous wallpaper downloader for the website: https://alphacoders.com/.
+<h1 align="center">
+  AlphacodersDownloader
+</h1>
+<p align="center">
+    <img src="https://ForTheBadge.com/images/badges/made-with-python.svg">
+    <img src="https://forthebadge.com/images/badges/uses-git.svg">
+    <br>
+    <img src="https://img.shields.io/github/license/Asthowen/AlphacodersWallpaperDownloader?style=for-the-badge">
+    <img src="https://img.shields.io/github/stars/Asthowen/AlphacodersWallpaperDownloader?style=for-the-badge">
+</p>
+<h3 align="center">
+    <strong>AlphacodersDownloader is a asynchronous wallpaper downloader for the website: https://alphacoders.com/.</strong>
+</h3>
 
 ## Made with
 * [**BeautifulSoup4**](https://pypi.org/project/bs4/)
@@ -27,7 +35,7 @@ Enter a link: https://mobile.alphacoders.com/by-sub-category/227264 or https://w
 Enter download path: `/home/asthowen/download/` for example.
 
 ## Author
-[<img width="64" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)
+[<img width="45" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)
 
 ## License
 **[AlphacodersWallpaperDownloader](https://github.com/Asthowen/AlphacodersWallpaperDownloader) | [Mozilla Public License 2.0](https://github.com/Asthowen/AlphacodersWallpaperDownloader/blob/main/LICENSE)**

@@ -88,7 +88,7 @@ class Main:
         pages_list = []
         page_char = '&' if 'https://mobile.alphacoders.com/' not in self.url else '?'
 
-        async with self.client_session.get(f'{self.url}{page_char}page=1') as r:
+        async with self.client_session.get(f'{self.url}{page_char}page=1', cookies={'AlphaCodersView': 'paged'}) as r:
             all_links = BeautifulSoup(
                 await r.text(),
                 'html.parser'
@@ -117,6 +117,7 @@ class Main:
         await self.__limit_task(10, *[self.__download(element) for element in self.images_list])
 
         await self.stop()
+        print('Terminé !')
 
 
 async def main():
