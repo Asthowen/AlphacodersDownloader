@@ -16,22 +16,22 @@
 * [**BeautifulSoup4**](https://pypi.org/project/bs4/)
 * [**aiohttp**](https://pypi.org/project/aiohttp/)
 
+## Usage
 ### Install prerequisites
 You must run this command for install dependencies: 
 <br>
 `pip3 install bs4 aiohttp`
 
-## Use
-Clone the repo: 
-<br>
-`git clone https://github.com/Asthowen/AlphacodersWallpaperDownloader.git`
+Clone the repo: `git clone https://github.com/Asthowen/AlphacodersWallpaperDownloader.git`
 
 Switch to folder: `cd AlphacodersWallpaperDownloader/`
+
+### Use script
 
 Start the script: `python3 main.py`
 
 Enter a link: https://mobile.alphacoders.com/by-sub-category/227264 or https://wall.alphacoders.com/search.php?search=SAO for example.
-<br>
+
 Enter download path: `/home/asthowen/download/` for example.
 
 ## Author

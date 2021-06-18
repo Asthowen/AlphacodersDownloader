@@ -20,6 +20,9 @@ class Main:
         self.images_len = 0
         self.image_downloaded = 0
 
+    def __del__(self):
+        asyncio.get_event_loop().run_until_complete(self.stop())
+
     async def stop(self):
         if self.client_session is not None:
             await self.client_session.close()
@@ -54,9 +57,7 @@ class Main:
                 'html.parser'
             )
 
-        get_all_img_tags = links.findAll('img')
-
-        for link in get_all_img_tags:
+        for link in links.findAll('img'):
             href = str(link.get('src'))
 
             if href.startswith('https://images') or href.startswith('https://mfiles'):
@@ -121,25 +122,18 @@ class Main:
 
 
 async def main():
-    client = None
+    url = input(
+        "Veuillez rentrez l'url de téléchargement (ex : "
+        'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
+    ).replace(' ', '')
 
-    try:
-        url_base = input(
-            "Veuillez rentrez l'url de téléchargement (ex : "
-            'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
-        ).replace(' ', '')
+    path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/asthowen/download/). > ")
 
-        path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/asthowen/download/). > ")
-
-        client = Main(url_base, path)
-
-        await client.start()
-    except KeyboardInterrupt:
-        if client is not None:
-            await client.stop()
-    except FileNotFoundError:
-        print("Ce dossier n'existe pas.")
-
+    await Main(url, path).start()
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.get_event_loop().run_until_complete(main())
+    except KeyboardInterrupt:
+        print('\nArrêt du script...')
+
