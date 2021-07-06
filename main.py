@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import aiofiles
 import asyncio
 import aiohttp
 import os
@@ -11,7 +12,7 @@ class Main:
             path: str
     ):
         self.url = url
-        self.path = path if path[-1] == '/' else path + '/'
+        self.path = path if path[-1] == os.sep else path + os.sep
 
         self.client_session = None
         self.images_list = []
@@ -19,13 +20,6 @@ class Main:
         self.links_got = 0
         self.images_len = 0
         self.image_downloaded = 0
-
-    def __del__(self):
-        asyncio.get_event_loop().run_until_complete(self.stop())
-
-    async def stop(self):
-        if self.client_session is not None:
-            await self.client_session.close()
 
     @staticmethod
     def __progress_bar(
@@ -46,9 +40,9 @@ class Main:
 
         async def sem_task(task):
             async with semaphore:
-                await task
+                return await task
 
-        await asyncio.gather(*(sem_task(task) for task in tasks))
+        return await asyncio.gather(*(sem_task(task) for task in tasks))
 
     async def __parse_url(self, url: str):
         async with self.client_session.get(url) as r:
@@ -68,17 +62,17 @@ class Main:
                 self.images_list.append([href.replace(images_name_file_thumb, '') + images_name_file, images_name_file])
 
         self.links_got += 1
-        self.__progress_bar(self.links_got, self.links_len, 'Récupération des liens des images')
+        self.__progress_bar(self.links_got, self.links_len, 'Retrieving links from images')
 
     async def __download(self, element: list):
         if os.path.isfile(self.path + element[1]) is False:
             async with self.client_session.get(element[0]) as r:
-                with open(self.path + element[1], 'wb') as f:
+                async with aiofiles.open(self.path + element[1], 'wb') as f:
                     async for data in r.content.iter_chunked(1024):
-                        f.write(data)
+                        await f.write(data)
 
         self.image_downloaded += 1
-        self.__progress_bar(self.image_downloaded, self.images_len, 'Téléchargement des images')
+        self.__progress_bar(self.image_downloaded, self.images_len, 'Downloading images')
 
     async def start(self):
         self.client_session = aiohttp.ClientSession()
@@ -109,25 +103,25 @@ class Main:
         all_pages = [f'{self.url}{page_char}page={str(i)}' for i in range(int(page_number) + 1)]
         self.links_len = len(all_pages)
 
-        self.__progress_bar(0, self.links_len, 'Récupération des liens des images')
+        self.__progress_bar(0, self.links_len, 'Retrieving links from images')
         await self.__limit_task(15, *[self.__parse_url(url) for url in all_pages])
 
         self.images_len = len(self.images_list)
 
-        self.__progress_bar(0, self.images_len, 'Téléchargement des images')
+        self.__progress_bar(0, self.images_len, 'Downloading images')
         await self.__limit_task(10, *[self.__download(element) for element in self.images_list])
 
-        await self.stop()
-        print('Terminé !')
+        await self.client_session.close()
+        print('Completed!')
 
 
 async def main():
     url = input(
-        "Veuillez rentrez l'url de téléchargement (ex : "
+        "Please enter the download url (e.g. "
         'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
     ).replace(' ', '')
 
-    path = input("Veuillez rentrez le dossier d'enregistrement des images (ex : /home/asthowen/download/). > ")
+    path = input("Please enter the folder where the images are saved (e.g. /home/asthowen/download/backgrounds/). > ")
 
     await Main(url, path).start()
 
@@ -135,5 +129,4 @@ if __name__ == '__main__':
     try:
         asyncio.get_event_loop().run_until_complete(main())
     except KeyboardInterrupt:
-        print('\nArrêt du script...')
-
+        print('\nStop the script...')
