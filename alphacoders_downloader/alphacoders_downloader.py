@@ -22,11 +22,7 @@ class Main:
         self.image_downloaded = 0
 
     @staticmethod
-    def __progress_bar(
-            iteration: int,
-            total: int,
-            prefix: str
-    ):
+    def __progress_bar(iteration: int, total: int, prefix: str):
         f = int(100 * iteration // total)
 
         print(f"\r{prefix} [{'█' * f + ' ' * (100 - f)}] {str(round(100 * (iteration / float(total)), 2))}%", end='')
@@ -46,10 +42,7 @@ class Main:
 
     async def __parse_url(self, url: str):
         async with self.client_session.get(url) as r:
-            links = BeautifulSoup(
-                await r.text(),
-                'html.parser'
-            )
+            links = BeautifulSoup(await r.text(), 'html.parser')
 
         for link in links.findAll('img'):
             href = str(link.get('src'))
@@ -121,7 +114,7 @@ async def main():
         'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
     ).replace(' ', '')
 
-    path = input("Please enter the folder where the images are saved (e.g. /home/asthowen/download/backgrounds/). > ")
+    path = input("Please enter the folder where the images are saved (e.g. ~/downloads/backgrounds/). > ")
 
     await Main(url, path).start()
 

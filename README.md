@@ -32,6 +32,35 @@
 * [**aiohttp**](https://pypi.org/project/aiohttp/)
 
 ## Installation
+### Install on Debian/Ubuntu
+##### With deb file
+Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+
+Install package (replace fileName by the file name):
+```bash
+apt install -f ./fileName
+```
+##### With my apt repository
+Install requirements:
+```bash
+apt install curl apt-transport-https gnupg2
+```
+
+Import GPG key:
+```bash
+curl https://apt.asthowen.fr/key.gpg | apt-key add -
+```
+
+Add the repository in `/etc/apt/sources.list.d/`:
+```bash
+echo "deb https://apt.asthowen.fr/ stable main" >> /etc/apt/sources.list.d/asthowen-packages.list
+```
+
+Update repositories and install package:
+```bash
+apt update && apt install python3-alphacodersdownloader
+```
+
 ### Install with PyPI
 Install module:
 ```bash
@@ -62,10 +91,10 @@ python3 run.py
 ## Use
 Enter a link: https://mobile.alphacoders.com/by-sub-category/227264 or https://wall.alphacoders.com/search.php?search=SAO for example.
 
-Enter download path: `/home/asthowen/downloads/backgrounds/` for example.
+Enter download path: `~/downloads/backgrounds/` for example.
 
 ## Author
 [<img width="45" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)
 
 ## License
-**[AlphacodersWallpaperDownloader](https://github.com/Asthowen/AlphacodersWallpaperDownloader) | [GNU General Public License v3.0](https://github.com/Asthowen/AlphacodersWallpaperDownloader/blob/main/LICENSE)**
+**[AlphacodersWallpaperDownloader](https://github.com/Asthowen/AlphacodersWallpaperDownloader) | [GNU v3.0](https://github.com/Asthowen/AlphacodersWallpaperDownloader/blob/main/LICENSE)**
