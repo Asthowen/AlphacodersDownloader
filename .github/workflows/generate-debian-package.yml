@@ -1,6 +1,9 @@
 name: Generate Debian package and publish to apt repository
 
-on: push
+on:
+  push:
+    tags:
+      - '*'
   workflow_dispatch:
 
 jobs:
