@@ -5,6 +5,10 @@ import aiohttp
 import os
 
 
+def clear_line():
+    print('\033[F\033[K', end='')
+
+
 class Main:
     def __init__(self, url: str, path: str):
         self.url = url
@@ -21,7 +25,7 @@ class Main:
     def __progress_bar(iteration: int, total: int, prefix: str):
         f = int(100 * iteration // total)
 
-        print(f"\r{prefix} [{'█' * f + ' ' * (100 - f)}] {str(round(100 * (iteration / float(total)), 2))}%", end='')
+        print(f"{prefix} [{'█' * f + ' ' * (100 - f)}] {100 * (iteration / float(total)):.2f}%", end='\r')
 
         if iteration == total:
             print()
@@ -109,8 +113,10 @@ async def main():
         "Please enter the download url (e.g. "
         'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
     ).replace(' ', '')
+    clear_line()
 
     path = input("Please enter the folder where the images are saved (e.g. ~/downloads/backgrounds/). > ")
+    clear_line()
 
     await Main(url, path).start()
 
