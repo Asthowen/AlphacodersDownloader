@@ -1,0 +1,41 @@
+name: Generate RPM package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Generating RPM Package
+        id: generate_rpm_package
+        run: |
+          dnf install rpm-build python3 python3-pip -y
+          python3 setup_compile.py bdist_rpm --requires "python3-beautifulsoup4 python3-aiofiles python3-aiohttp"
+          echo "::set-output name=MODULE_VERSION::$(python3 setup_compile.py --version)"
+        env:
+          VERSION: ${{ steps.get_release.outputs.tag_name }}
+
+      - name: Get latest release
+        id: get_latest_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Upload RPM Package to releases
+        id: upload_rpm_package
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
+          asset_path: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+          asset_name: AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+          asset_content_type: application/octet-stream
