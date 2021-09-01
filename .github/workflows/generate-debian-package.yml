@@ -13,9 +13,9 @@ jobs:
         id: generate_debian_package
         run: |
           sudo apt install python3-stdeb fakeroot python-all dh-python
-          python3 setup.py sdist
-          sudo python3 setup.py --command-packages=stdeb.command bdist_deb
-          echo "::set-output name=MODULE_VERSION::$(python3 setup.py --version)"
+          python3 setup_compile.py sdist
+          sudo python3 setup_compile.py --command-packages=stdeb.command bdist_deb
+          echo "::set-output name=MODULE_VERSION::$(python3 setup_compile.py --version)"
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 

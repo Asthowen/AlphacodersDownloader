@@ -6,11 +6,7 @@ import os
 
 
 class Main:
-    def __init__(
-            self,
-            url: str,
-            path: str
-    ):
+    def __init__(self, url: str, path: str):
         self.url = url
         self.path = path if path[-1] == os.sep else path + os.sep
 

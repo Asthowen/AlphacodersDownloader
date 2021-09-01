@@ -61,6 +61,14 @@ Update repositories and install package:
 apt update && apt install python3-alphacodersdownloader
 ```
 
+### Install on Fedora/RedHat/CentOS/AlmaLinux
+Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+
+Install package (replace fileName by the file name):
+```bash
+yum install fileName
+```
+
 ### Install with PyPI
 Install module:
 ```bash
