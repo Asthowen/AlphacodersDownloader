@@ -2,8 +2,6 @@ name: Publish AlphacodersDownloader to Test-PyPI and PyPI
 
 on:
   push:
-    tags:
-      - '*'
   workflow_dispatch:
 
 jobs:
