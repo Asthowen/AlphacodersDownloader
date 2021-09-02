@@ -1,9 +1,9 @@
 name: Generate RPM package
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
+  push:
+    tags:
+      - '*'
 
 jobs:
   build:
@@ -24,9 +24,9 @@ jobs:
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 
-      - name: Get latest release
+      - name: Get release
         id: get_release
-        uses: bruceadams/get-release@v1.2.3
+        uses: bruceadams/get-release@v1.2.2
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
