@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8', errors='ignore') as f:
 
 setuptools.setup(
     name='AlphacodersDownloader',
-    version='0.0.9',
+    version='0.1.0',
     author='Asthowen',
     author_email='contact@asthowen.fr',
     maintainer='Asthowen',
