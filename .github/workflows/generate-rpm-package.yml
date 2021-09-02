@@ -2,7 +2,8 @@ name: Generate RPM package
 
 on:
   release:
-    types: [created]
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -24,8 +25,8 @@ jobs:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 
       - name: Get latest release
-        id: get_latest_release
-        uses: bruceadams/get-release@v1.2.2
+        id: get_release
+        uses: bruceadams/get-release@v1.2.3
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
@@ -35,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.get_latest_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           asset_name: AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           asset_content_type: application/octet-stream
