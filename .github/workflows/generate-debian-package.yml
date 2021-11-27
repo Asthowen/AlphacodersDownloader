@@ -36,7 +36,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./deb_dist/python3-alphacodersdownloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
           asset_name: alphacoders-downloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
           asset_content_type: application/octet-stream
