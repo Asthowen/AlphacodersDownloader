@@ -23,17 +23,6 @@ jobs:
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 
-      - name: Create Release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: false
-          release_name: ${{ steps.generate_debian_package.outputs.MODULE_VERSION }}
-          tag_name: ${{ steps.generate_debian_package.outputs.MODULE_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
       - name: Upload Debian Package to releases
         uses: actions/upload-release-asset@v1.0.2
         env:
