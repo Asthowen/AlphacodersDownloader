@@ -27,7 +27,7 @@ jobs:
         id: get_release
         uses: leahlundqvist/get-release@v1.3.1
         with:
-          tag_name: ${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}
+          tag_name: ${{ steps.generate_debian_package.outputs.MODULE_VERSION }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
