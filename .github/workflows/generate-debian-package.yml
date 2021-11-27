@@ -1,11 +1,13 @@
 name: Generate Debian package and publish to apt repository
 
 on:
-  push:
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
-  build:
+  generate-debian-package:
+    name: Generate Debian package and publish to apt repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
