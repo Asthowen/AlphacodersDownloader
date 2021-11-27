@@ -1,0 +1,24 @@
+name: Publish AlphacodersDownloader to AUR
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish_to_aur:
+    name: Publish AlphacodersDownloader to AUR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Downloading Files
+        uses: actions/checkout@v2
+
+      - name: Update AUR Package
+        uses: KSXGitHub/github-actions-deploy-aur@v2.2.4
+        with:
+          pkgname: python-alphacodersdownloader
+          pkgbuild: archlinux/PKGBUILD
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update AUR package

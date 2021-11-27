@@ -5,7 +5,7 @@ with open('README.md', 'r', encoding='utf-8', errors='ignore') as f:
 
 setuptools.setup(
     name='AlphacodersDownloader',
-    version='0.1.0',
+    version='0.1.1',
     author='Asthowen',
     author_email='contact@asthowen.fr',
     maintainer='Asthowen',
@@ -21,5 +21,5 @@ setuptools.setup(
     },
     python_requires='>= 3.6',
     include_package_data=True,
-    install_requires=['aiohttp', 'aiofiles', 'beautifulsoup4']
+    install_requires=['aiohttp', 'aiofiles', 'setproctitle', 'beautifulsoup4']
 )

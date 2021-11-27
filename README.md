@@ -3,7 +3,7 @@
 </h1>
 <p align="center">
     <a href="https://www.python.org/">
-        <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Use Python">
+        <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Written in Python">
     </a>
     <a href="https://github.com/Asthowen/AlphacodersWallpaperDownloader">
         <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Uses git">
@@ -15,6 +15,7 @@
     <a href="https://pypi.org/project/AlphacodersDownloader/">
         <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI version">
     </a>
+    <br>
     <a href="https://github.com/Asthowen/AlphacodersWallpaperDownloader/blob/main/LICENSE">
         <img src="https://img.shields.io/github/license/Asthowen/AlphacodersWallpaperDownloader?style=for-the-badge" alt="License">
     </a>
@@ -77,7 +78,7 @@ python3 -m pip install AlphacodersDownloader
 
 Start the script:
 ```bash
-alphacoders_downloader
+alphacoders-downloader
 ```
 
 ### Install manually

@@ -1,14 +1,13 @@
-name: Generate RPM package
+name: Generate RPM package and publish to RPM repository
 
 on:
-  workflow_run:
-    workflows: ["Generate Debian package and publish to apt repository"]
-    types:
-      - completed
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
-  build:
+  generate-rpm-package:
+    name: Generate RPM package and publish to RPM repository
     runs-on: ubuntu-latest
     container:
       image: fedora:latest
@@ -21,7 +20,7 @@ jobs:
         id: generate_rpm_package
         run: |
           dnf install rpm-build python3 python3-pip -y
-          python3 setup_compile.py bdist_rpm --requires "python3-beautifulsoup4 python3-aiofiles python3-aiohttp"
+          python3 setup_compile.py bdist_rpm --requires "python3-beautifulsoup4 python3-aiofiles python3-aiohttp python3-setproctitle"
           echo "::set-output name=MODULE_VERSION::$(python3 setup_compile.py --version)"
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
@@ -44,3 +43,22 @@ jobs:
           asset_path: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           asset_name: AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           asset_content_type: application/octet-stream
+
+      - name: Deploy to server
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          SOURCE: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          TARGET: ${{ secrets.REMOTE_TARGET_RPM }}AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+
+      - name: Update rpm repository
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          port: ${{ secrets.REMOTE_PORT }}
+          script: ${{ secrets.REMOTE_DEPLOY_RPM }}
