@@ -1,6 +1,8 @@
+import cursor
+
 from alphacoders_downloader.utils import limit_task, clear_line, print_error
+from alphacoders_downloader.cursor import HiddenCursor, show
 from alphacoders_downloader.progress_bar import ProgressBar
-from alphacoders_downloader.cursor import HiddenCursor
 from bs4 import BeautifulSoup
 import setproctitle
 import aiofiles
@@ -44,14 +46,19 @@ class Main:
     async def download(self, element: list):
         if os.path.isfile(self.path + element[1]) is False:
             async with self.client_session.get(element[0]) as r:
-                async with aiofiles.open(self.temp_path + element[1], 'wb') as f:
-                    try:
-                        async for data in r.content.iter_chunked(1024):
-                            await f.write(data)
-                    except asyncio.TimeoutError:
-                        self.image_downloaded += 1
-                        self.progress_bar.progress(self.image_downloaded)
-                        return print_error(f"Download of file: {element[0]} has been timeout.")
+                try:
+                    async with aiofiles.open(self.temp_path + element[1], 'wb') as f:
+                        try:
+                            async for data in r.content.iter_chunked(1024):
+                                await f.write(data)
+                        except asyncio.TimeoutError:
+                            self.image_downloaded += 1
+                            self.progress_bar.progress(self.image_downloaded)
+                            return self.progress_bar.print_error(f"Download of file: {element[0]} has been timeout.")
+                except aiohttp.ClientPayloadError:
+                    self.image_downloaded += 1
+                    self.progress_bar.progress(self.image_downloaded)
+                    return self.progress_bar.print_error(f"Download of file: {element[0]} has been ClientPayloadError.")
 
                 if os.path.isfile(self.temp_path + element[1]):
                     shutil.move(self.temp_path + element[1], self.path + element[1])
@@ -120,5 +127,7 @@ def start():
         asyncio.get_event_loop().run_until_complete(main())
     except KeyboardInterrupt:
         print('\nStop the script...')
+        cursor.show()
     except Exception as e:
-        print_error(e)
+        print_error(str(e))
+        cursor.show()
