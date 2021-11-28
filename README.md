@@ -34,13 +34,6 @@
 
 ## Installation
 ### Install on Debian/Ubuntu
-##### With deb file
-Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
-
-Install package (replace fileName by the file name):
-```bash
-apt install -f ./fileName
-```
 ##### With my apt repository
 Install requirements:
 ```bash
@@ -62,7 +55,32 @@ Update repositories and install package:
 apt update && apt install python3-alphacodersdownloader
 ```
 
+##### With deb file
+Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+
+Install package (replace fileName by the file name):
+```bash
+apt install -f ./fileName
+```
+
 ### Install on Fedora/RedHat/CentOS/AlmaLinux
+##### With my RPM repository
+Install requirement:
+```bash
+yum install curl 
+```
+
+Add the repository in `/etc/yum.repos.d/`:
+```bash
+curl https://rpm.asthowen.fr/asthowen.repo > /etc/yum.repos.d/asthowen.repo
+```
+
+Update repositories and install package:
+```bash
+yum check-update && yum install AlphacodersDownloader 
+```
+
+##### With RPM file
 Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
 
 Install package (replace fileName by the file name):
