@@ -7,6 +7,13 @@ class ProgressBar:
         self.prefix = prefix
 
         self.iteration: float = 0
+        self.is_started = False
+
+    def print_error(self, text: str):
+        if self.is_started:
+            print()
+            clear_line()
+        print('\033[91m' + text + '\033[0m')
 
     def set_progress_bar_parameters(
         self, total: float = None, prefix: str = None, iteration: float = None, progress_at_0: bool = False
@@ -23,6 +30,7 @@ class ProgressBar:
     def progress(self, iteration: float):
         self.iteration = iteration
         self.__update_progress_bar()
+        self.is_started = True
 
     def __update_progress_bar(self):
         f = int(100 * self.iteration // self.total)
@@ -32,3 +40,4 @@ class ProgressBar:
         if self.iteration == self.total:
             print()
             clear_line()
+            self.is_started = False
