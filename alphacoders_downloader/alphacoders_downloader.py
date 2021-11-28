@@ -1,5 +1,3 @@
-import cursor
-
 from alphacoders_downloader.utils import limit_task, clear_line, print_error
 from alphacoders_downloader.cursor import HiddenCursor, show
 from alphacoders_downloader.progress_bar import ProgressBar
@@ -127,7 +125,7 @@ def start():
         asyncio.get_event_loop().run_until_complete(main())
     except KeyboardInterrupt:
         print('\nStop the script...')
-        cursor.show()
+        show()
     except Exception as e:
         print_error(str(e))
-        cursor.show()
+        show()
