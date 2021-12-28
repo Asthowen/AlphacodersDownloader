@@ -1,7 +1,7 @@
 import asyncio
 
 
-async def limit_task(number: int, *tasks):
+async def limit_tasks(number: int, *tasks):
     semaphore = asyncio.Semaphore(number)
 
     async def sem_task(task):

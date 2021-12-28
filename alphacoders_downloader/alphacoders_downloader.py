@@ -1,4 +1,4 @@
-from alphacoders_downloader.utils import limit_task, clear_line, print_error
+from alphacoders_downloader.utils import limit_tasks, clear_line, print_error
 from alphacoders_downloader.cursor import HiddenCursor, show
 from alphacoders_downloader.progress_bar import ProgressBar
 from bs4 import BeautifulSoup
@@ -28,7 +28,7 @@ class Main:
         async with self.client_session.get(url) as r:
             links = BeautifulSoup(await r.text(), 'html.parser')
 
-        for link in links.findAll('img'):
+        for link in links.find('div', attrs={'id': 'big_container'}).findAll('img'):
             href = str(link.get('src'))
 
             if href.startswith('https://images') or href.startswith('https://mfiles'):
@@ -88,18 +88,22 @@ class Main:
                 except IndexError:
                     pages_list.append(href.split('?page=')[1])
 
-        page_number = pages_list[int(max(pages_list))]
+        if pages_list:
+            page_number = pages_list[int(max(pages_list))]
 
-        all_pages = [f'{self.url}{page_char}page={str(i)}' for i in range(int(page_number) + 1)]
-        self.links_len = len(all_pages)
+            all_pages = [f'{self.url}{page_char}page={str(i)}' for i in range(int(page_number) + 1)]
+            self.links_len = len(all_pages)
 
-        self.progress_bar = ProgressBar(self.links_len, 'Retrieving links from images')
-        await limit_task(15, *[self.parse_url(url) for url in all_pages])
+            self.progress_bar = ProgressBar(self.links_len, 'Retrieving links from images')
+            await limit_tasks(15, *[self.parse_url(url) for url in all_pages])
+        else:
+            self.progress_bar = ProgressBar(1, 'Retrieving links from images')
+            await self.parse_url(self.url)
 
         self.images_len = len(self.images_list)
 
         self.progress_bar.set_progress_bar_parameters(self.images_len, 'Downloading images', 0, True)
-        await limit_task(10, *[self.download(element) for element in self.images_list])
+        await limit_tasks(10, *[self.download(element) for element in self.images_list])
 
         await self.client_session.close()
         shutil.rmtree(self.temp_path)
