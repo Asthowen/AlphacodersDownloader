@@ -33,6 +33,16 @@
 * [**aiohttp**](https://pypi.org/project/aiohttp/)
 
 ## Installation
+### Install on Archlinux
+Link: https://aur.archlinux.org/packages/python-alphacodersdownloader/
+
+You can use an AUR package manager as [yay](https://github.com/Jguer/yay) or [pamac](https://gitlab.manjaro.org/applications/pamac/) for example.
+
+Example with yay:
+```sh
+yay -S python-alphacodersdownloader
+```
+
 ### Install on Debian/Ubuntu
 ##### With my apt repository
 Install requirements:
