@@ -1,7 +1,9 @@
 from alphacoders_downloader.utils import limit_tasks, clear_line, print_error
+from alphacoders_downloader.exceptions import WallpapersNotFounds
 from alphacoders_downloader.cursor import HiddenCursor, show
 from alphacoders_downloader.progress_bar import ProgressBar
 from bs4 import BeautifulSoup
+from typing import Union
 import setproctitle
 import aiofiles
 import asyncio
@@ -10,13 +12,16 @@ import shutil
 import os
 
 
+main_class = None
+
+
 class Main:
     def __init__(self, url: str, path: str):
         self.url = url
         self.path = path if path[-1] == os.sep else path + os.sep
         self.temp_path = self.path + 'temp' + os.sep
 
-        self.progress_bar: ProgressBar = None
+        self.progress_bar: Union[ProgressBar, None] = None
         self.client_session = None
         self.images_list = []
         self.links_len = 0
@@ -26,20 +31,27 @@ class Main:
 
     async def parse_url(self, url: str):
         async with self.client_session.get(url) as r:
-            links = BeautifulSoup(await r.text(), 'html.parser')
+            page = BeautifulSoup(await r.text(), 'html.parser')
 
-        for link in links.find('div', attrs={'id': 'big_container'}).findAll('img'):
-            href = str(link.get('src'))
+        find_images_urls = page.find('div', attrs={'id': 'big_container'})
 
-            if href.startswith('https://images') or href.startswith('https://mfiles'):
-                images_link_list_split = href.split('/')
-                images_name_file_thumb = images_link_list_split[len(images_link_list_split) - 1]
-                images_name_file = images_name_file_thumb.split('-')[len(images_name_file_thumb.split('-')) - 1]
+        if find_images_urls is None:
+            raise WallpapersNotFounds(url)
+        else:
+            for link in find_images_urls.find_all('img'):
+                href = str(link.get('src'))
 
-                self.images_list.append([href.replace(images_name_file_thumb, '') + images_name_file, images_name_file])
+                if href.startswith('https://images') or href.startswith('https://mfiles'):
+                    images_link_list_split = href.split('/')
+                    images_name_file_thumb = images_link_list_split[len(images_link_list_split) - 1]
+                    images_name_file = images_name_file_thumb.split('-')[len(images_name_file_thumb.split('-')) - 1]
 
-        self.links_got += 1
-        self.progress_bar.progress(self.links_got)
+                    self.images_list.append(
+                        [href.replace(images_name_file_thumb, '') + images_name_file, images_name_file]
+                    )
+
+            self.links_got += 1
+            self.progress_bar.progress(self.links_got)
 
     async def download(self, element: list):
         if os.path.isfile(self.path + element[1]) is False:
@@ -68,10 +80,10 @@ class Main:
         self.client_session = aiohttp.ClientSession()
 
         if os.path.exists(self.path) is False:
-            os.mkdir(self.path)
+            os.makedirs(self.path)
 
         if os.path.exists(self.temp_path) is False:
-            os.mkdir(self.temp_path)
+            os.makedirs(self.temp_path)
 
         pages_list = []
         page_char = '&' if 'https://mobile.alphacoders.com/' not in self.url else '?'
@@ -102,7 +114,7 @@ class Main:
 
         self.images_len = len(self.images_list)
 
-        self.progress_bar.set_progress_bar_parameters(self.images_len, 'Downloading images', 0, True)
+        self.progress_bar.set_progress_bar_parameters(self.images_len, 'Downloading backgrounds', 0, True)
         await limit_tasks(10, *[self.download(element) for element in self.images_list])
 
         await self.client_session.close()
@@ -112,16 +124,23 @@ class Main:
 
 async def main():
     setproctitle.setproctitle('AlphacodersDownloader')
-    url = input(
-        'Please enter the download url (e.g. '
-        'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
-    ).replace(' ', '')
-    clear_line()
-    path = input("Please enter the folder where the images are saved (e.g. ~/downloads/backgrounds/). > ")
-    clear_line()
+    url = ''
+    while 'https://' not in url and 'alphacoders.com' not in url:
+        url = input(
+            'Please enter the download url (e.g. '
+            'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
+        ).replace(' ', '')
+        clear_line()
+
+    path = ''
+    while os.access(os.path.dirname(path), os.W_OK) is False:
+        path = input('Please enter the folder where the images are saved (e.g. ~/downloads/backgrounds/). > ')
+        clear_line()
 
     with HiddenCursor() as _:
-        await Main(url, path).start()
+        global main_class
+        main_class = Main(url, path)
+        await main_class.start()
 
 
 def start():
@@ -131,5 +150,8 @@ def start():
         print('\nStop the script...')
         show()
     except Exception as e:
+        if hasattr(main_class, 'client_session'):
+            if main_class.client_session is not None and main_class.client_session.closed is False:
+                asyncio.get_event_loop().run_until_complete(main_class.client_session.close())
         print_error(str(e))
         show()

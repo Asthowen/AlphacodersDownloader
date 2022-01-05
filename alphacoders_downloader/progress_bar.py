@@ -34,8 +34,9 @@ class ProgressBar:
 
     def __update_progress_bar(self):
         f = int(100 * self.iteration // self.total)
-        print(f"{self.prefix} [{'█' * f + ' ' * (100 - f)}] {100 * (self.iteration / float(self.total)):.2f}%",
-              end='\r')
+        print(
+            f"{self.prefix} [{'█' * f + ' ' * (100 - f)}] {100 * (self.iteration / float(self.total)):.2f}%", end='\r'
+        )
 
         if self.iteration == self.total:
             print()
