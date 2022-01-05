@@ -66,7 +66,7 @@ apt update && apt install python3-alphacodersdownloader
 ```
 
 ##### With deb file
-Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+Download the latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
 
 Install package (replace fileName by the file name):
 ```bash
@@ -91,7 +91,7 @@ yum check-update && yum install AlphacodersDownloader
 ```
 
 ##### With RPM file
-Download latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+Download the latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
 
 Install package (replace fileName by the file name):
 ```bash

@@ -1,17 +1,25 @@
 name: Publish AlphacodersDownloader to AUR
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflow: 'Publish AlphacodersDownloader to Test-PyPI and PyPI'
+    types:
+      - completed
   workflow_dispatch:
 
 jobs:
-  publish_to_aur:
+  publish-to-aur:
     name: Publish AlphacodersDownloader to AUR
     runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
     steps:
-      - name: Downloading Files
+      - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Generate checksum
+        run: |
+          cd archlinux && pacman -S pacman-contrib --noconfirm && updpkgsums
 
       - name: Update AUR Package
         uses: KSXGitHub/github-actions-deploy-aur@v2.2.4

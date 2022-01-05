@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 # Author: James Spencer: http://stackoverflow.com/users/1375885/james-spencer
-# Packager: Gijs Timmers:  https://github.com/GijsTimmers
+# Packager: Gijs Timers:  https://github.com/GijsTimmers
 
 # Based on James Spencer's answer on StackOverflow:
 # http://stackoverflow.com/q/5174810
@@ -16,7 +16,7 @@ if os.name == 'nt':
     import ctypes
 
     class _CursorInfo(ctypes.Structure):
-        _fields_ = [("size", ctypes.c_int), ("visible", ctypes.c_byte)]
+        _fields_ = [('size', ctypes.c_int), ('visible', ctypes.c_byte)]
 
 
 def hide(stream=sys.stdout):
@@ -27,7 +27,7 @@ def hide(stream=sys.stdout):
         ci.visible = False
         ctypes.windll.kernel32.SetConsoleCursorInfo(handle, ctypes.byref(ci))
     elif os.name == 'posix':
-        stream.write("\033[?25l")
+        stream.write('\033[?25l')
         stream.flush()
 
 
@@ -39,7 +39,7 @@ def show(stream=sys.stdout):
         ci.visible = True
         ctypes.windll.kernel32.SetConsoleCursorInfo(handle, ctypes.byref(ci))
     elif os.name == 'posix':
-        stream.write("\033[?25h")
+        stream.write('\033[?25h')
         stream.flush()
 
 
@@ -50,5 +50,5 @@ class HiddenCursor(object):
     def __enter__(self):
         hide(stream=self._stream)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exit_type, exit_value, exit_traceback):
         show(stream=self._stream)
