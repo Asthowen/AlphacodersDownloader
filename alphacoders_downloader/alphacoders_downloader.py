@@ -1,7 +1,8 @@
-from alphacoders_downloader.utils import limit_tasks, clear_line, print_error
+from alphacoders_downloader.util.utils import limit_tasks, clear_line, print_error
+from alphacoders_downloader.util.arguments_builder import ArgumentsBuilder
 from alphacoders_downloader.exceptions import WallpapersNotFounds
-from alphacoders_downloader.cursor import HiddenCursor, show
-from alphacoders_downloader.progress_bar import ProgressBar
+from alphacoders_downloader.util.cursor import HiddenCursor, show
+from alphacoders_downloader.util.progress_bar import ProgressBar
 from bs4 import BeautifulSoup
 from typing import Union
 import setproctitle
@@ -9,8 +10,8 @@ import aiofiles
 import asyncio
 import aiohttp
 import shutil
+import sys
 import os
-
 
 main_class = None
 
@@ -94,16 +95,18 @@ class Main:
         for link in all_links:
             href = str(link.get('href'))
 
-            if href.find('page') >= 0:
+            if 'page' in href:
                 try:
-                    pages_list.append(href.split('&page=')[1])
+                    href_spliced = href.split('&page=')[1]
+                    if href_spliced not in pages_list:
+                        pages_list.append(href_spliced)
                 except IndexError:
-                    pages_list.append(href.split('?page=')[1])
+                    href_spliced = href.split('?page=')[1]
+                    if href_spliced not in pages_list:
+                        pages_list.append(href_spliced)
 
         if pages_list:
-            page_number = pages_list[int(max(pages_list))]
-
-            all_pages = [f'{self.url}{page_char}page={str(i)}' for i in range(int(page_number) + 1)]
+            all_pages = [f'{self.url}{page_char}page={str(i)}' for i in range(int(max(pages_list)) + 1)]
             self.links_len = len(all_pages)
 
             self.progress_bar = ProgressBar(self.links_len, 'Retrieving links from images')
@@ -113,41 +116,87 @@ class Main:
             await self.parse_url(self.url)
 
         self.images_len = len(self.images_list)
-
-        self.progress_bar.set_progress_bar_parameters(self.images_len, 'Downloading backgrounds', 0, True)
+        self.progress_bar.set_progress_bar_parameters(self.images_len, 'Downloading wallpapers', 0, True)
         await limit_tasks(10, *[self.download(element) for element in self.images_list])
 
         await self.client_session.close()
         shutil.rmtree(self.temp_path)
-        print('Completed!')
+        print('\033[1mCompleted!\033[0m')
+
+
+class CommandsHandler:
+    @staticmethod
+    async def download(command_return: dict):
+        wallpapers_url = command_return['args'][command_return['args'].index('-S') + 1]
+        if 'https://' not in wallpapers_url and 'alphacoders.com' not in wallpapers_url:
+            print_error("This URL isn't correct.")
+            sys.exit()
+        path_to_download = command_return['args'][command_return['args'].index('-P') + 1]
+        if os.access(os.path.dirname(path_to_download), os.W_OK) is False:
+            print_error("This path isn't correct.")
+            sys.exit()
+
+        global main_class
+        main_class = Main(wallpapers_url, path_to_download)
+        await main_class.start()
+
+    @staticmethod
+    def get_version(_):
+        from alphacoders_downloader import __version__, __license__
+
+        version_text = f'\033[1mAlphacodersDownloader {__version__}\033[0m\n'
+        version_text += f'Created by \033[1mAsthowen\033[0m - \033[1mcontact@asthowen.fr\033[0m\n'
+        version_text += f'License: \033[1m{__license__}\033[0m'
+
+        print(version_text)
 
 
 async def main():
     setproctitle.setproctitle('AlphacodersDownloader')
-    url = ''
-    while 'https://' not in url and 'alphacoders.com' not in url:
-        url = input(
-            'Please enter the download url (e.g. '
-            'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
-        ).replace(' ', '')
-        clear_line()
 
-    path = ''
-    while os.access(os.path.dirname(path), os.W_OK) is False:
-        path = input('Please enter the folder where the images are saved (e.g. ~/downloads/backgrounds/). > ')
-        clear_line()
+    if len(sys.argv) <= 1:
+        url = ''
+        while 'https://' not in url and 'alphacoders.com' not in url:
+            url = input(
+                'Please enter the download url (e.g. '
+                'https://wall.alphacoders.com/search.php?search=sword+art+online). > '
+            ).replace(' ', '')
+            clear_line()
 
-    with HiddenCursor() as _:
-        global main_class
-        main_class = Main(url, path)
-        await main_class.start()
+        path = ''
+        while os.access(os.path.dirname(path), os.W_OK) is False:
+            path = input('Please enter the folder where the images are saved (e.g. ~/downloads/wallpapers/). > ')
+            clear_line()
+
+        with HiddenCursor() as _:
+            global main_class
+            main_class = Main(url, path)
+            await main_class.start()
+    else:
+        parser = ArgumentsBuilder(
+            'A script for download wallpapers on https://alphacoders.com/.', 'alphacoders-downloader'
+        )
+
+        parser.add_argument(
+            '-S', action=CommandsHandler().download, description='Download wallpapers.',
+            command_usage='-S wallpapers_url -P path'
+        )
+        parser.add_argument(
+            '-V', action=CommandsHandler.get_version, description='Get version infos.', command_usage='-V'
+        )
+        with HiddenCursor() as _:
+            await parser.build()
 
 
 def start():
     try:
         asyncio.get_event_loop().run_until_complete(main())
     except KeyboardInterrupt:
-        print('\nStop the script...')
+        if hasattr(main_class, 'client_session'):
+            if main_class.client_session is not None and main_class.client_session.closed is False:
+                asyncio.get_event_loop().run_until_complete(main_class.client_session.close())
+        clear_line()
+        print('Stop the script...')
         show()
     except Exception as e:
         if hasattr(main_class, 'client_session'):

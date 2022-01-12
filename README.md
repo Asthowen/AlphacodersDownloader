@@ -1,3 +1,4 @@
+<!--suppress HtmlDeprecatedAttribute -->
 <h1 align="center">
   AlphacodersDownloader
 </h1>
@@ -5,8 +6,15 @@
     <a href="https://www.python.org/">
         <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Written in Python">
     </a>
-    <a href="https://github.com/Asthowen/AlphacodersWallpaperDownloader">
+    <a href="https://github.com/Asthowen/AlphacodersDownloader">
         <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Uses git">
+    </a>
+    <br>
+    <a href="https://github.com/Asthowen/AlphacodersDownloader/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/Asthowen/AlphacodersDownloader?style=for-the-badge" alt="License">
+    </a>
+    <a href="https://github.com/Asthowen/AlphacodersDownloader/stargazers">
+        <img src="https://img.shields.io/github/stars/Asthowen/AlphacodersDownloader?style=for-the-badge" alt="Stars">
     </a>
     <br>
     <a href="https://pypi.org/project/AlphacodersDownloader/">
@@ -15,16 +23,9 @@
     <a href="https://pypi.org/project/AlphacodersDownloader/">
         <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI version">
     </a>
-    <br>
-    <a href="https://github.com/Asthowen/AlphacodersWallpaperDownloader/blob/main/LICENSE">
-        <img src="https://img.shields.io/github/license/Asthowen/AlphacodersWallpaperDownloader?style=for-the-badge" alt="License">
-    </a>
-    <a href="https://github.com/Asthowen/AlphacodersWallpaperDownloader/stargazers">
-        <img src="https://img.shields.io/github/stars/Asthowen/AlphacodersWallpaperDownloader?style=for-the-badge" alt="Stars">
-    </a>
 </p>
 <h3 align="center">
-    <strong>A script for download backgrounds on https://alphacoders.com/ written in Python.</strong>
+    <strong>A script for download wallpapers on https://alphacoders.com/ written in Python.</strong>
 </h3>
 
 ## Made with
@@ -66,7 +67,7 @@ apt update && apt install python3-alphacodersdownloader
 ```
 
 ##### With deb file
-Download the latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+Download the latest release on: https://github.com/Asthowen/AlphacodersDownloader/releases/latest.
 
 Install package (replace fileName by the file name):
 ```bash
@@ -91,7 +92,7 @@ yum check-update && yum install AlphacodersDownloader
 ```
 
 ##### With RPM file
-Download the latest release on: https://github.com/Asthowen/AlphacodersWallpaperDownloader/releases/latest.
+Download the latest release on: https://github.com/Asthowen/AlphacodersDownloader/releases/latest.
 
 Install package (replace fileName by the file name):
 ```bash
@@ -104,15 +105,10 @@ Install module:
 python3 -m pip install AlphacodersDownloader
 ```
 
-Start the script:
-```bash
-alphacoders-downloader
-```
-
 ### Install manually
 Clone the repo and switch to folder:
 ```bash
-git clone https://github.com/Asthowen/AlphacodersWallpaperDownloader.git && cd AlphacodersWallpaperDownloader/
+git clone https://github.com/Asthowen/AlphacodersDownloader.git && cd AlphacodersDownloader/
 ```
 
 Install dependencies:
@@ -126,12 +122,33 @@ python3 run.py
 ```
 
 ## Use
+### With helper
+Start the script:
+```bash
+alphacoders-downloader
+```
+
 Enter a link: https://mobile.alphacoders.com/by-sub-category/227264 or https://wall.alphacoders.com/search.php?search=SAO for example.
 
-Enter download path: `~/downloads/backgrounds/` for example.
+Enter download path: `~/downloads/wallpapers/` for example.
+
+### With arguments
+#### Arguments list
+`-S` Link to the wallpaper, must be associated with the `-P` argument.
+<br>
+`-P` The path to download wallpapers, must be associated with the `-S` argument.
+<br>
+`-H` The help command.
+<br>
+`-V` Get infos about version.
+#### Examples
+Download wallpaper in `~/downloads/wallpapers/`:
+```bash
+alphacoders-downloader -S "https://mobile.alphacoders.com/by-sub-category/227264" -P "~/downloads/wallpapers/"
+```
 
 ## Author
 [<img width="45" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)
 
 ## License
-**[AlphacodersWallpaperDownloader](https://github.com/Asthowen/AlphacodersWallpaperDownloader) | [GNU v3.0](https://github.com/Asthowen/AlphacodersWallpaperDownloader/blob/main/LICENSE)**
+**[AlphacodersDownloader](https://github.com/Asthowen/AlphacodersDownloader) | [GNU v3.0](https://github.com/Asthowen/AlphacodersDownloader/blob/main/LICENSE)**
