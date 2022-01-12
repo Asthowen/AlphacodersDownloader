@@ -45,14 +45,15 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Deploy to server
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          TARGET: ${{ secrets.REMOTE_TARGET_RPM }}AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+        uses: wlixcc/SFTP-Deploy-Action@v1.0
+        with:
+          username: ${{ secrets.REMOTE_USER }}
+          port: ${{ secrets.REMOTE_PORT }}
+          server: ${{ secrets.REMOTE_HOST }}
+          ssh_private_key: ${{ secrets.SERVER_SSH_KEY }}
+          local_path: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+          remote_path: ${{ secrets.REMOTE_TARGET_RPM }}AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+          args: '-o ConnectTimeout=5'
 
       - name: Update rpm repository
         uses: appleboy/ssh-action@master
