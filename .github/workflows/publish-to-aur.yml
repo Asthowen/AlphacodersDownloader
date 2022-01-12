@@ -12,7 +12,7 @@ jobs:
     name: Publish AlphacodersDownloader to AUR
     runs-on: ubuntu-latest
     container:
-      image: build_files:latest
+      image: archlinux:latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2

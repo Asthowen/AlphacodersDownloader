@@ -21,7 +21,7 @@
         <img src="https://img.shields.io/pypi/v/AlphacodersDownloader?style=for-the-badge" alt="PyPI version">
     </a>
     <a href="https://pypi.org/project/AlphacodersDownloader/">
-        <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI version">
+        <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI downloads">
     </a>
 </p>
 <h3 align="center">
