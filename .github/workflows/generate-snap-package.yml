@@ -1,0 +1,30 @@
+name: Generate Snap package and publish it
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  generate-snap-package:
+    name: Generate Snap package and publish it
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Move snapcraft file to project root
+        id: generate_rpm_package
+        run: |
+          cp build_files/snapcraft.yaml ./
+
+      - uses: snapcore/action-build@v1
+        name: Build Snap package
+        id: build
+
+      - uses: snapcore/action-publish@v1
+        name: Publish Snap package
+        with:
+          store_login: ${{ secrets.STORE_LOGIN }}
+          snap: ${{ steps.build.outputs.snap }}
+          release: stable

@@ -99,6 +99,14 @@ Install package (replace fileName by the file name):
 yum install fileName
 ```
 
+### Install with Snap
+Start by install Snap (see https://snapcraft.io/docs/installing-snapd).
+
+And then, install the package:
+```bash
+snap install alphacoders-downloader
+```
+
 ### Install with PyPI
 Install module:
 ```bash
