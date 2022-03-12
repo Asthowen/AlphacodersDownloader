@@ -1,4 +1,4 @@
-name: Generate Debian package and publish to apt repository
+name: Generate Debian package and publish to APT repository
 
 on:
   release:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   generate-debian-package:
-    name: Generate Debian package and publish to apt repository
+    name: Generate Debian package and publish to APT repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -17,7 +17,7 @@ jobs:
         id: generate_debian_package
         run: |
           sudo apt install python3-stdeb fakeroot python-all dh-python
-          cp build_files/setup_build.py ./
+          cp build/setup_build.py ./
           python3 setup_build.py sdist
           sudo python3 setup_build.py --command-packages=stdeb.command bdist_deb
           echo "::set-output name=MODULE_VERSION::$(python3 setup_build.py --version)"
@@ -43,20 +43,21 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Deploy to server
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
-          SOURCE: ./deb_dist/python3-alphacodersdownloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
-          TARGET: ${{ secrets.REMOTE_TARGET }}alphacoders-downloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
+        uses: wlixcc/SFTP-Deploy-Action@v1.0
+        with:
+          server: ${{ secrets.DEBIAN_REPO_HOST }}
+          username: ${{ secrets.DEBIAN_REPO_USERNAME }}
+          port: ${{ secrets.DEBIAN_REPO_PORT }}
+          ssh_private_key: ${{ secrets.DEBIAN_REPO_SSH_KEY }}
+          local_path: ./deb_dist/python3-alphacodersdownloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
+          remote_path: ${{ secrets.DEBIAN_REPO_PATH }}alphacoders-downloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
+          args: '-o ConnectTimeout=5'
 
-      - name: Update apt repository
+      - name: Update APT repository
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
-          script: ${{ secrets.REMOTE_DEPLOY }}
+          host: ${{ secrets.DEBIAN_REPO_HOST }}
+          username: ${{ secrets.DEBIAN_REPO_USERNAME }}
+          port: ${{ secrets.DEBIAN_REPO_PORT }}
+          key: ${{ secrets.DEBIAN_REPO_SSH_KEY }}
+          script: ${{ secrets.DEBIAN_REPO_SCRIPT }}

@@ -1,4 +1,5 @@
 import asyncio
+import os
 
 
 async def limit_tasks(number: int, *tasks):
@@ -9,6 +10,11 @@ async def limit_tasks(number: int, *tasks):
             return await task
 
     return await asyncio.gather(*(sem_task(task) for task in tasks))
+
+
+def create_folder_recursively(folder: str):
+    if os.path.exists(folder) is False:
+        os.makedirs(folder)
 
 
 def clear_line():
