@@ -13,17 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Move snapcraft file to project root
-        id: generate_rpm_package
+      - name: Move snapcraft.yaml file to project root
         run: |
-          cp build_files/snapcraft.yaml ./
+          cp build/snapcraft.yaml ./
 
-      - uses: snapcore/action-build@v1
-        name: Build Snap package
+      - name: Build Snap package
+        uses: snapcore/action-build@v1
         id: build
 
-      - uses: snapcore/action-publish@v1
-        name: Publish Snap package
+      - name: Publish Snap package
+        uses: snapcore/action-publish@v1
         with:
           store_login: ${{ secrets.STORE_LOGIN }}
           snap: ${{ steps.build.outputs.snap }}

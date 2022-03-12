@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='AlphacodersDownloader',
-    version='0.1.3.2',
+    version='0.1.4',
     author='Asthowen',
     author_email='contact@asthowen.fr',
     maintainer='Asthowen',

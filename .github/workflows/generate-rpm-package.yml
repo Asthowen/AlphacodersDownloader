@@ -19,7 +19,7 @@ jobs:
         id: generate_rpm_package
         run: |
           dnf install rpm-build python3 python3-pip -y
-          cp build_files/setup_build.py ./
+          cp build/setup_build.py ./
           python3 setup_build.py bdist_rpm --requires "python3-beautifulsoup4 python3-aiofiles python3-aiohttp python3-setproctitle"
           echo "::set-output name=MODULE_VERSION::$(python3 setup_build.py --version)"
         env:
@@ -47,19 +47,19 @@ jobs:
       - name: Deploy to server
         uses: wlixcc/SFTP-Deploy-Action@v1.0
         with:
-          username: ${{ secrets.REMOTE_USER }}
-          port: ${{ secrets.REMOTE_PORT }}
-          server: ${{ secrets.REMOTE_HOST }}
-          ssh_private_key: ${{ secrets.SERVER_SSH_KEY }}
+          server: ${{ secrets.RPM_REPO_HOST }}
+          username: ${{ secrets.RPM_REPO_USER }}
+          port: ${{ secrets.RPM_REPO_PORT }}
+          ssh_private_key: ${{ secrets.RPM_REPO_SSH_KEY }}
           local_path: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
-          remote_path: ${{ secrets.REMOTE_TARGET_RPM }}AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
+          remote_path: ${{ secrets.RPM_REPO_PATH }}AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           args: '-o ConnectTimeout=5'
 
-      - name: Update rpm repository
+      - name: Update RPM repository
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: ${{ secrets.REMOTE_PORT }}
-          script: ${{ secrets.REMOTE_DEPLOY_RPM }}
+          host: ${{ secrets.RPM_REPO_HOST }}
+          username: ${{ secrets.RPM_REPO_USER }}
+          port: ${{ secrets.RPM_REPO_PORT }}
+          key: ${{ secrets.RPM_REPO_SSH_KEY }}
+          script: ${{ secrets.RPM_REPO_SCRIPT }}
