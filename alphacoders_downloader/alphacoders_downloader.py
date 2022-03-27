@@ -36,6 +36,8 @@ class AlphacodersDownloader:
             page = BeautifulSoup(await r.text(), 'html.parser')
 
         find_images_urls = page.find('div', attrs={'id': 'big_container'})
+        if find_images_urls is None:
+            find_images_urls = page.find('div', attrs={'class': 'container-masonry'})
 
         if find_images_urls is None:
             raise WallpapersNotFounds(url)

@@ -23,6 +23,17 @@
     <a href="https://pypi.org/project/AlphacodersDownloader/">
         <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI downloads">
     </a>
+    <br>
+    <a href="https://aur.archlinux.org/packages/alphacodersdownloader/">
+        <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white" alt="Arch Linux"/>
+    </a>
+    <a href="https://github.com/Asthowen/AlphacodersDownloader/releases/latest/">
+        <img src="https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white" alt="Debian"/>
+    </a>
+    <a href="https://github.com/Asthowen/AlphacodersDownloader/releases/latest/">
+        <img src="https://img.shields.io/badge/Fedora-294172?style=for-the-badge&logo=fedora&logoColor=white" alt="Fedora"/>
+    </a>
+
 </p>
 <h3 align="center">
     <strong>A script for download wallpapers on https://alphacoders.com/ written in Python.</strong>
@@ -53,7 +64,7 @@ apt install curl apt-transport-https gnupg2
 
 Import GPG key:
 ```bash
-curl https://apt.asthowen.fr/key.gpg | apt-key add -
+curl https://asthowen.fr/key.gpg | apt-key add -
 ```
 
 Add the repository in `/etc/apt/sources.list.d/`:
