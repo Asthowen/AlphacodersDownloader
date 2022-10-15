@@ -83,10 +83,17 @@ class AlphacodersDownloader:
         path = os.path.join(self.path, element[1])
         if os.path.isfile(path) is False:
             temp_path = os.path.join(self.temp_path, element[1])
+            headers = {}
+            temp_file_exist = os.path.isfile(temp_path)
+            if temp_file_exist:
+                file_size = os.stat(temp_path).st_size
+                headers['Range'] = f'bytes={file_size}-'
             file_downloaded = 0
-            async with self.client_session.get(element[0]) as r:
+
+            async with self.client_session.get(element[0], headers=headers) as r:
                 try:
-                    async with aiofiles.open(temp_path, 'wb') as f:
+                    write_mode = 'ab' if temp_file_exist else 'wb'
+                    async with aiofiles.open(temp_path, write_mode) as f:
                         try:
                             async for data in r.content.iter_chunked(1024):
                                 await f.write(data)
@@ -190,7 +197,11 @@ async def main():
 
 def start():
     try:
+        os.get_terminal_size(0)
         asyncio.get_event_loop().run_until_complete(main())
+    except OSError:
+        print_error('Your terminal does not support all the features needed for AlphacodersDownloader, please use another one.')
+        show()
     except KeyboardInterrupt:
         clear_line()
         print('Stop the script...')
