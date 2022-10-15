@@ -4,6 +4,7 @@ from alphacoders_downloader.util.utils import create_folder_recursively
 from alphacoders_downloader.exceptions import WallpapersNotFounds
 from alphacoders_downloader.util.cursor import HiddenCursor, show
 from alphacoders_downloader.util.progress_bar import ProgressBar
+from alphacoders_downloader import __version__, __license__
 from alphacoders_downloader.util.spinner import Spinner
 from bs4 import BeautifulSoup
 from typing import Union
@@ -39,36 +40,36 @@ class AlphacodersDownloader:
         images_name_file = images_name_file_thumb.split('-')[len(images_name_file_thumb.split('-')) - 1]
         if os.path.isfile(os.path.join(self.path, images_name_file)) is False:
             image_url = image_url.replace(images_name_file_thumb, '') + images_name_file
-            async with self.client_session.head(image_url) as r:
-                file_size = int(r.headers['Content-Length'])
+            async with self.client_session.head(image_url) as request:
+                file_size = int(request.headers['Content-Length'])
                 self.total_size_to_download += file_size
 
             self.images_list.append([image_url, images_name_file, file_size])
 
     async def parse_url(self, url: str):
-        async with self.client_session.get(url, cookies={'AlphaCodersView': 'paged'}) as r:
-            page = BeautifulSoup(await r.text(), 'html.parser')
+        async with self.client_session.get(url, cookies={'AlphaCodersView': 'paged'}) as request:
+            page = BeautifulSoup(await request.text(), 'html.parser')
 
         find_images_urls = page.find('div', {'id': 'page_container'}).find_all('div', 'thumb-container-big')
 
         if find_images_urls is None:
             raise WallpapersNotFounds(url)
-        else:
-            for link in find_images_urls:
-                href = str(link.find('img').get('src'))
 
-                if (href.startswith('https://images') or href.startswith(
-                        'https://mfiles')) and href not in self.temp_images_list:
-                    self.temp_images_list.append(href)
+        for a_element in find_images_urls:
+            href = str(a_element.find('img').get('src'))
 
-            self.links_got += 1
+            if (href.startswith('https://images') or href.startswith('https://mfiles')) and href not in \
+                    self.temp_images_list:
+                self.temp_images_list.append(href)
 
-        a_element = page.find('div', {'class': 'pagination-simple center'}).find_all('a')
+        self.links_got += 1
+
+        a_elements = page.find('div', {'class': 'pagination-simple center'}).find_all('a')
         changed_element = None
-        if a_element is not None and a_element:
-            for x in a_element:
-                if x.text.strip() == 'Next >>':
-                    changed_element = x
+        if a_elements is not None and a_elements:
+            for a_element in a_elements:
+                if a_element.text.strip() == 'Next >>':
+                    changed_element = a_element
                     break
         if changed_element is not None:
             url = changed_element.get('href')
@@ -90,13 +91,13 @@ class AlphacodersDownloader:
                 headers['Range'] = f'bytes={file_size}-'
             file_downloaded = 0
 
-            async with self.client_session.get(element[0], headers=headers) as r:
+            async with self.client_session.get(element[0], headers=headers) as request:
                 try:
                     write_mode = 'ab' if temp_file_exist else 'wb'
-                    async with aiofiles.open(temp_path, write_mode) as f:
+                    async with aiofiles.open(temp_path, write_mode) as file:
                         try:
-                            async for data in r.content.iter_chunked(1024):
-                                await f.write(data)
+                            async for data in request.content.iter_chunked(1024):
+                                await file.write(data)
 
                                 file_downloaded += len(data)
                                 self.progress_bar.progress(len(data))
@@ -150,10 +151,8 @@ class CommandsHandler:
 
     @staticmethod
     def get_version(_):
-        from alphacoders_downloader import __version__, __license__
-
         version_text = f'\033[1mAlphacodersDownloader {__version__}\033[0m\n'
-        version_text += f'Created by \033[1mAsthowen\033[0m - \033[1mcontact@asthowen.fr\033[0m\n'
+        version_text += 'Created by \033[1mAsthowen\033[0m - \033[1mcontact@asthowen.fr\033[0m\n'
         version_text += f'License: \033[1m{__license__}\033[0m'
 
         print(version_text)
@@ -196,16 +195,18 @@ async def main():
 
 
 def start():
+    # pylint: disable=W0703
     try:
         os.get_terminal_size(0)
         asyncio.get_event_loop().run_until_complete(main())
     except OSError:
-        print_error('Your terminal does not support all the features needed for AlphacodersDownloader, please use another one.')
+        print_error('Your terminal does not support all the features needed for AlphacodersDownloader, please use '
+                    'another one.')
         show()
     except KeyboardInterrupt:
         clear_line()
         print('Stop the script...')
         show()
-    except Exception as e:
-        print_error(str(e))
+    except Exception as exception:
+        print_error(str(exception))
         show()

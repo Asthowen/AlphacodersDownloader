@@ -99,14 +99,15 @@ class ProgressBar:
             self.is_started = False
 
     @staticmethod
-    def __parse_size(num):
+    def __parse_size(num) -> str:
         for unit in ('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB'):
             if abs(num) < 1024.0:
                 return f"{num:3.1f}{unit}/s"
             num /= 1024.0
+        return '0B/s'
 
     @staticmethod
-    def __parse_duration(duration: int):
+    def __parse_duration(duration: int) -> str:
         minutes, seconds = divmod(duration, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
