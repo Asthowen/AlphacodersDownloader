@@ -5,6 +5,9 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   generate-rpm-package:
     name: Generate RPM package and publish to RPM repository
@@ -25,21 +28,12 @@ jobs:
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 
-      - name: Get release
-        id: get_release
-        uses: leahlundqvist/get-release@v1.3.1
-        with:
-          tag_name: ${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
       - name: Upload RPM Package to releases
-        id: upload_rpm_package
-        uses: actions/upload-release-asset@v1.0.2
+        uses: Asthowen/UploadReleaseAsset@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          release_tag: ${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}
           asset_path: ./dist/AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           asset_name: AlphacodersDownloader-${{ steps.generate_rpm_package.outputs.MODULE_VERSION }}-1.noarch.rpm
           asset_content_type: application/octet-stream

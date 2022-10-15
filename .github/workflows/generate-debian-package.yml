@@ -5,6 +5,9 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   generate-debian-package:
     name: Generate Debian package and publish to APT repository
@@ -24,20 +27,12 @@ jobs:
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 
-      - name: Get release
-        id: get_release
-        uses: leahlundqvist/get-release@v1.3.1
-        with:
-          tag_name: ${{ steps.generate_debian_package.outputs.MODULE_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
       - name: Upload Debian Package to releases
-        uses: actions/upload-release-asset@v1.0.2
+        uses: Asthowen/UploadReleaseAsset@main
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          release_tag: ${{ steps.generate_debian_package.outputs.MODULE_VERSION }}
           asset_path: ./deb_dist/python3-alphacodersdownloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
           asset_name: alphacoders-downloader_${{ steps.generate_debian_package.outputs.MODULE_VERSION }}-1_all.deb
           asset_content_type: application/octet-stream
