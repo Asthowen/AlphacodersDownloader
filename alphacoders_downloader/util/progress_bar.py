@@ -12,14 +12,14 @@ class ProgressBar:
 
         self.iteration: float = 0
         self.iteration_eta: float = 0
-        self.__speed_value = ''
+        self.__speed_value = ""
         self.__speed_latest_value = 0
         self.__speed_latest_time = 0
-        self.__speed_eta = ''
+        self.__speed_eta = ""
         self.__can_use_data = 0
         self.is_started = False
 
-        self.__progress_bar_chars = ('▏', '▎', '▍', '▌', '▋', '▊', '▉')
+        self.__progress_bar_chars = ("▏", "▎", "▍", "▌", "▋", "▊", "▉")
 
     def set_total(self, total: float):
         self.total = total
@@ -42,7 +42,11 @@ class ProgressBar:
         self.__update_progress_bar()
 
     def set_progress_bar_parameters(
-            self, total: float = None, prefix: str = None, iteration: float = None, progress_at_0: bool = False
+        self,
+        total: float = None,
+        prefix: str = None,
+        iteration: float = None,
+        progress_at_0: bool = False,
     ):
         if total is not None:
             self.set_total(total)
@@ -58,10 +62,14 @@ class ProgressBar:
             if self.speed and time.time() - self.__speed_latest_time >= 1:
                 if self.__can_use_data >= 2:
                     current_eta = self.iteration_eta - self.__speed_latest_value
-                    self.__speed_value = ' - ' + self.__parse_size(current_eta) + ' '
-                    self.__speed_eta = '| ' + self.__parse_duration(
+                    self.__speed_value = " - " + self.__parse_size(current_eta) + " "
+                    self.__speed_eta = "| " + self.__parse_duration(
                         math.trunc(
-                            ((self.total - (self.iteration - self.iteration_eta)) - self.iteration_eta) / current_eta
+                            (
+                                (self.total - (self.iteration - self.iteration_eta))
+                                - self.iteration_eta
+                            )
+                            / current_eta
                         )
                     )
                 else:
@@ -78,7 +86,7 @@ class ProgressBar:
         if self.is_started:
             print()
             clear_line()
-        print('\033[91m' + text + '\033[0m')
+        print("\033[91m" + text + "\033[0m")
 
     def __update_progress_bar(self):
         terminal_size = os.get_terminal_size(0).columns
@@ -88,10 +96,14 @@ class ProgressBar:
         additional_progress = self.__progress_bar_chars[
             int(((place_to_print * self.iteration / self.total) % 1) / (1 / 7))
         ]
-        progress_chars = '█' * filled_length + additional_progress + ' ' * (place_to_print - filled_length - 1)
+        progress_chars = (
+            "█" * filled_length
+            + additional_progress
+            + " " * (place_to_print - filled_length - 1)
+        )
 
         to_print = f"{self.prefix} [{progress_chars}] {percentage:.2f}%{self.__speed_value}{self.__speed_eta}"
-        print(f"{to_print}{(terminal_size - len(to_print)) * ' '}", end='\r')
+        print(f"{to_print}{(terminal_size - len(to_print)) * ' '}", end="\r")
 
         if self.iteration == self.total:
             print()
@@ -100,11 +112,11 @@ class ProgressBar:
 
     @staticmethod
     def __parse_size(num) -> str:
-        for unit in ('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB'):
+        for unit in ("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB"):
             if abs(num) < 1024.0:
                 return f"{num:3.1f}{unit}/s"
             num /= 1024.0
-        return '0B/s'
+        return "0B/s"
 
     @staticmethod
     def __parse_duration(duration: int) -> str:

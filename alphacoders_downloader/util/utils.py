@@ -18,9 +18,9 @@ def create_folder_recursively(folder: str):
 
 
 def clear_line():
-    print('\033[F', end='')
-    print('\033[K', end='')
+    print("\033[F", end="")
+    print("\033[K", end="")
 
 
 def print_error(text: str):
-    print('\033[91m' + text + '\033[0m')
+    print("\033[91m" + text + "\033[0m")

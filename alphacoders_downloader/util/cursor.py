@@ -7,37 +7,36 @@
 import sys
 import os
 
-if os.name == 'nt':
+if os.name == "nt":
     import ctypes
 
-
     class _CursorInfo(ctypes.Structure):
-        _fields_ = [('size', ctypes.c_int), ('visible', ctypes.c_byte)]
+        _fields_ = [("size", ctypes.c_int), ("visible", ctypes.c_byte)]
 
 
 # pylint: disable=W0201
 def hide(stream=sys.stdout):
-    if os.name == 'nt':
+    if os.name == "nt":
         cursor_info = _CursorInfo()
         handle = ctypes.windll.kernel32.GetStdHandle(-11)
         ctypes.windll.kernel32.GetConsoleCursorInfo(handle, ctypes.byref(cursor_info))
         cursor_info.visible = False
         ctypes.windll.kernel32.SetConsoleCursorInfo(handle, ctypes.byref(cursor_info))
-    elif os.name == 'posix':
-        stream.write('\033[?25l')
+    elif os.name == "posix":
+        stream.write("\033[?25l")
         stream.flush()
 
 
 # pylint: disable=W0201
 def show(stream=sys.stdout):
-    if os.name == 'nt':
+    if os.name == "nt":
         cursor_info = _CursorInfo()
         handle = ctypes.windll.kernel32.GetStdHandle(-11)
         ctypes.windll.kernel32.GetConsoleCursorInfo(handle, ctypes.byref(cursor_info))
         cursor_info.visible = True
         ctypes.windll.kernel32.SetConsoleCursorInfo(handle, ctypes.byref(cursor_info))
-    elif os.name == 'posix':
-        stream.write('\033[?25h')
+    elif os.name == "posix":
+        stream.write("\033[?25h")
         stream.flush()
 
 
