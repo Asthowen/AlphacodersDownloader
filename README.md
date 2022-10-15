@@ -59,17 +59,17 @@ yay -S python-alphacodersdownloader
 ##### With my apt repository
 Install requirements:
 ```bash
-apt install curl apt-transport-https gnupg2
+apt install curl apt-transport-https gnupg2 
 ```
 
 Import GPG key:
 ```bash
-curl https://asthowen.fr/key.gpg | apt-key add -
+ curl -s https://asthowen.fr/key.gpg | gpg --dearmor | tee /usr/share/keyrings/asthowen.gpg > /dev/null
 ```
 
 Add the repository in `/etc/apt/sources.list.d/`:
 ```bash
-echo "deb https://apt.asthowen.fr/ stable main" >> /etc/apt/sources.list.d/asthowen-packages.list
+ echo 'deb [signed-by=/usr/share/keyrings/asthowen.gpg] https://apt.asthowen.fr stable main' >> /etc/apt/sources.list.d/asthowen-packages.list
 ```
 
 Update repositories and install package:
@@ -170,4 +170,4 @@ alphacoders-downloader -S "https://mobile.alphacoders.com/by-sub-category/227264
 [<img width="45" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)
 
 ## License
-**[AlphacodersDownloader](https://github.com/Asthowen/AlphacodersDownloader) | [GNU v3.0](https://github.com/Asthowen/AlphacodersDownloader/blob/main/LICENSE)**
+**[AlphacodersDownloader](https://github.com/Asthowen/AlphacodersDownloader) | [GNU General Public License v3.0](https://github.com/Asthowen/AlphacodersDownloader/blob/main/LICENSE)**

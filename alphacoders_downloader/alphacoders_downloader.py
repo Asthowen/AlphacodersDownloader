@@ -23,48 +23,70 @@ class AlphacodersDownloader:
         self.client_session = client_session
 
         self.temp_path = self.path + 'temp' + os.sep
+        self.page_char = ''
         self.progress_bar: Union[ProgressBar, None] = None
         self.spinner: Spinner = Spinner()
+        self.temp_images_list = []
         self.images_list = []
         self.links_len = 0
         self.links_got = 0
         self.total_size_to_download = 0
         self.total_size_downloaded = 0
 
+    async def fetch_images(self, image_url: str):
+        images_link_list_split = image_url.split('/')
+        images_name_file_thumb = images_link_list_split[len(images_link_list_split) - 1]
+        images_name_file = images_name_file_thumb.split('-')[len(images_name_file_thumb.split('-')) - 1]
+        if os.path.isfile(os.path.join(self.path, images_name_file)) is False:
+            image_url = image_url.replace(images_name_file_thumb, '') + images_name_file
+            async with self.client_session.head(image_url) as r:
+                file_size = int(r.headers['Content-Length'])
+                self.total_size_to_download += file_size
+
+            self.images_list.append([image_url, images_name_file, file_size])
+
     async def parse_url(self, url: str):
-        async with self.client_session.get(url) as r:
+        async with self.client_session.get(url, cookies={'AlphaCodersView': 'paged'}) as r:
             page = BeautifulSoup(await r.text(), 'html.parser')
 
-        find_images_urls = page.find('div', attrs={'id': 'big_container'})
-        if find_images_urls is None:
-            find_images_urls = page.find('div', attrs={'class': 'container-masonry'})
+        find_images_urls = page.find('div', {'id': 'page_container'}).find_all('div', 'thumb-container-big')
 
         if find_images_urls is None:
             raise WallpapersNotFounds(url)
         else:
-            for link in find_images_urls.find_all('img'):
-                href = str(link.get('src'))
+            for link in find_images_urls:
+                href = str(link.find('img').get('src'))
 
-                if href.startswith('https://images') or href.startswith('https://mfiles'):
-                    images_link_list_split = href.split('/')
-                    images_name_file_thumb = images_link_list_split[len(images_link_list_split) - 1]
-                    images_name_file = images_name_file_thumb.split('-')[len(images_name_file_thumb.split('-')) - 1]
-                    image_url = href.replace(images_name_file_thumb, '') + images_name_file
-
-                    async with self.client_session.head(image_url) as r:
-                        file_size = int(r.headers['Content-Length'])
-                        self.total_size_to_download += file_size
-
-                    self.images_list.append([image_url, images_name_file, file_size])
+                if (href.startswith('https://images') or href.startswith(
+                        'https://mfiles')) and href not in self.temp_images_list:
+                    self.temp_images_list.append(href)
 
             self.links_got += 1
 
+        a_element = page.find('div', {'class': 'pagination-simple center'}).find_all('a')
+        changed_element = None
+        if a_element is not None and a_element:
+            for x in a_element:
+                if x.text.strip() == 'Next >>':
+                    changed_element = x
+                    break
+        if changed_element is not None:
+            url = changed_element.get('href')
+            try:
+                url_spliced = url.split('&page=')[1]
+            except IndexError:
+                url_spliced = url.split('?page=')[1]
+
+            await self.parse_url(f'{self.url}{self.page_char}page=' + url_spliced)
+
     async def download(self, element: list):
-        if os.path.isfile(self.path + element[1]) is False:
+        path = os.path.join(self.path, element[1])
+        if os.path.isfile(path) is False:
+            temp_path = os.path.join(self.temp_path, element[1])
             file_downloaded = 0
             async with self.client_session.get(element[0]) as r:
                 try:
-                    async with aiofiles.open(self.temp_path + element[1], 'wb') as f:
+                    async with aiofiles.open(temp_path, 'wb') as f:
                         try:
                             async for data in r.content.iter_chunked(1024):
                                 await f.write(data)
@@ -78,8 +100,8 @@ class AlphacodersDownloader:
                     self.progress_bar.progress(element[2] - file_downloaded, True)
                     return self.progress_bar.print_error(f"Download of file: {element[0]} raise ClientPayloadError.")
 
-                if os.path.isfile(self.temp_path + element[1]):
-                    shutil.move(self.temp_path + element[1], self.path + element[1])
+                if os.path.isfile(temp_path):
+                    shutil.move(temp_path, path)
         else:
             self.progress_bar.progress(element[2], True)
 
@@ -90,35 +112,14 @@ class AlphacodersDownloader:
         create_folder_recursively(self.path)
         create_folder_recursively(self.temp_path)
 
-        pages_list = []
-        page_char = '&' if 'https://mobile.alphacoders.com/' not in self.url else '?'
-
-        async with self.client_session.get(f'{self.url}{page_char}page=1', cookies={'AlphaCodersView': 'paged'}) as r:
-            all_links = BeautifulSoup(await r.text(), 'html.parser').find_all('a', href=True)
-
-        for link in all_links:
-            href = str(link.get('href'))
-
-            if 'page' in href:
-                try:
-                    href_spliced = href.split('&page=')[1]
-                except IndexError:
-                    href_spliced = href.split('?page=')[1]
-
-                if href_spliced not in pages_list:
-                    pages_list.append(href_spliced)
-
         self.spinner.set_text('Recovery of the URLS of all the wallpapers...')
-
-        if pages_list:
-            all_pages = [f'{self.url}{page_char}page={str(i)}' for i in range(int(max(pages_list)) + 1)]
-            self.links_len = len(all_pages)
-
-            await limit_tasks(15, *[self.parse_url(url) for url in all_pages])
-        else:
-            await self.parse_url(self.url)
-
+        self.page_char = '&' if 'https://mobile.alphacoders.com/' not in self.url else '?'
+        await self.parse_url(f'{self.url}{self.page_char}page=1')
+        self.spinner.set_text('Recovery of the informations about wallpapers...')
+        await limit_tasks(10, *[self.fetch_images(element) for element in self.temp_images_list])
+        self.temp_images_list.clear()
         self.spinner.stop()
+
         self.progress_bar = ProgressBar(self.total_size_to_download, 'Downloading wallpapers', speed=True)
         await limit_tasks(10, *[self.download(element) for element in self.images_list])
 
