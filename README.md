@@ -151,20 +151,30 @@ Enter a link: https://mobile.alphacoders.com/by-sub-category/227264 or https://w
 
 Enter download path: `~/downloads/wallpapers/` for example.
 
+If you want change download speed, start by typing **y** and after that, enter a new download speed, it must be in Ko.
+
 ### With arguments
 #### Arguments list
 `-S` Link to the wallpaper, must be associated with the `-P` argument.
 <br>
 `-P` The path to download wallpapers, must be associated with the `-S` argument.
 <br>
+`-D` The download speed, it must be in Ko.
+<br>
 `-H` The help command.
 <br>
 `-V` Get infos about version.
+
 #### Examples
 Download wallpaper in `~/downloads/wallpapers/`:
 ```bash
-alphacoders-downloader -S "https://mobile.alphacoders.com/by-sub-category/227264" -P "~/downloads/wallpapers/"
+alphacoders-downloader -S "https://mobile.alphacoders.com/by-sub-category/227264" -P "~/downloads/wallpapers/" -D 1024
 ```
+
+## Dev
+**Before committing an update:**
+* The code must have a result of 10/10 with pylint, use the command: `pylint --recursive=y alphacoders_downloader/*`
+* The code must be cleaned with blake, run the command: `black alphacoders_downloader/ && black setup.py && black build/setup_build.py` 
 
 ## Author
 [<img width="45" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)

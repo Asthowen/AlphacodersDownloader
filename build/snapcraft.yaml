@@ -4,7 +4,7 @@ description: |
   This script allows you to download wallpapers from the site https://alphacoders.com/.
   * Download by categories (e.g: https://wall.alphacoders.com/by_sub_category.php?id=207679&name=Date+A+Live+Wallpapers)
   * Download mobiles wallpapers (e.g: https://mobile.alphacoders.com/by-sub-category/207679)
-version: 0.1.4.2
+version: 0.1.4.3
 grade: stable
 base: core20
 architectures:

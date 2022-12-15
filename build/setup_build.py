@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name='AlphacodersDownloader',
-    version='0.1.4.2',
+    version='0.1.4.3',
     author='Asthowen',
     author_email='contact@asthowen.fr',
     maintainer='Asthowen',
@@ -14,7 +14,9 @@ setuptools.setup(
     url='https://github.com/Asthowen/AlphacodersDownloader',
     packages=setuptools.find_packages(),
     entry_points={
-        'console_scripts': ['alphacoders-downloader = alphacoders_downloader.alphacoders_downloader:start']
+        "console_scripts": [
+            "alphacoders-downloader = alphacoders_downloader.alphacoders_downloader:start"
+        ]
     },
     python_requires='>= 3.6',
     include_package_data=True,

@@ -18,9 +18,12 @@ import os
 
 
 class AlphacodersDownloader:
-    def __init__(self, url: str, path: str, client_session: aiohttp.ClientSession):
+    def __init__(
+        self, url: str, path: str, size: int, client_session: aiohttp.ClientSession
+    ):
         self.url = url
         self.path = path if path[-1] == os.sep else path + os.sep
+        self.size = size
         self.client_session = client_session
 
         self.temp_path = self.path + "temp" + os.sep
@@ -105,7 +108,9 @@ class AlphacodersDownloader:
                     write_mode = "ab" if temp_file_exist else "wb"
                     async with aiofiles.open(temp_path, write_mode) as file:
                         try:
-                            async for data in request.content.iter_chunked(1024):
+                            async for data in request.content.iter_chunked(
+                                int(self.size / 8)
+                            ):
                                 await file.write(data)
 
                                 file_downloaded += len(data)
@@ -169,9 +174,22 @@ class CommandsHandler:
         if os.access(os.path.dirname(path_to_download), os.W_OK) is False:
             print_error("This path isn't correct.")
             sys.exit()
+
+        size = 2048
+        if "-D" in command_return["args"]:
+            download_index = command_return["args"].index("-D") + 1
+            if download_index < len(command_return["args"]):
+                converted_size = int(command_return["args"][download_index])
+                if (
+                    converted_size % 8 == 0
+                    and (converted_size / 8) > 0
+                    and ((converted_size / 8) % 8) == 0
+                ):
+                    size = converted_size
+
         async with aiohttp.ClientSession() as client_session:
             await AlphacodersDownloader(
-                wallpapers_url, path_to_download, client_session
+                wallpapers_url, path_to_download, size, client_session
             ).start()
 
     @staticmethod
@@ -204,9 +222,35 @@ async def main():
             )
             clear_line()
 
+        size = None
+        change_size = False
+        while size is None:
+            if change_size is False:
+                change_size_input = input(
+                    "Do you want to change the default download limit of 2Mo/s (y/n)? > "
+                )
+                clear_line()
+
+            if change_size_input.lower() in ("y", "yes") or change_size:
+                change_size = True
+                new_size_input = input(
+                    "Enter the new speed limit (must be in Ko, and be a multiple of 8) > "
+                )
+                clear_line()
+                if new_size_input.isdigit():
+                    converted = int(new_size_input)
+                    if (
+                        converted % 8 == 0
+                        and (converted / 8) > 0
+                        and ((converted / 8) % 8) == 0
+                    ):
+                        size = int(new_size_input)
+            else:
+                size = 2048
+
         with HiddenCursor() as _:
             async with aiohttp.ClientSession() as client_session:
-                await AlphacodersDownloader(url, path, client_session).start()
+                await AlphacodersDownloader(url, path, size, client_session).start()
     else:
         parser = ArgumentsBuilder(
             "A script for download wallpapers on https://alphacoders.com/.",
@@ -217,7 +261,7 @@ async def main():
             "-S",
             action=CommandsHandler().download,
             description="Download wallpapers.",
-            command_usage="-S wallpapers_url -P path",
+            command_usage="-S wallpapers_url -P path -D 1024",
         )
         parser.add_argument(
             "-V",
