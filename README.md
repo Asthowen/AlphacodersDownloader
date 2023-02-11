@@ -1,48 +1,45 @@
 <!--suppress HtmlDeprecatedAttribute -->
-<h1 align="center">
-  AlphacodersDownloader
-</h1>
-<p align="center">
-    <a href="https://www.python.org/">
-        <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Written in Python">
-    </a>
-    <a href="https://github.com/Asthowen/AlphacodersDownloader">
-        <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Uses git">
-    </a>
-    <br>
-    <a href="https://github.com/Asthowen/AlphacodersDownloader/blob/main/LICENSE">
-        <img src="https://img.shields.io/github/license/Asthowen/AlphacodersDownloader?style=for-the-badge" alt="License">
-    </a>
-    <a href="https://github.com/Asthowen/AlphacodersDownloader/stargazers">
-        <img src="https://img.shields.io/github/stars/Asthowen/AlphacodersDownloader?style=for-the-badge" alt="Stars">
-    </a>
-    <br>
-    <a href="https://pypi.org/project/AlphacodersDownloader/">
-        <img src="https://img.shields.io/pypi/v/AlphacodersDownloader?style=for-the-badge" alt="PyPI version">
-    </a>
-    <a href="https://pypi.org/project/AlphacodersDownloader/">
-        <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI downloads">
-    </a>
-    <br>
-    <a href="https://aur.archlinux.org/packages/alphacodersdownloader/">
-        <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white" alt="Arch Linux"/>
-    </a>
-    <a href="https://github.com/Asthowen/AlphacodersDownloader/releases/latest/">
-        <img src="https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white" alt="Debian"/>
-    </a>
-    <a href="https://github.com/Asthowen/AlphacodersDownloader/releases/latest/">
-        <img src="https://img.shields.io/badge/Fedora-294172?style=for-the-badge&logo=fedora&logoColor=white" alt="Fedora"/>
-    </a>
+<div align="center">
+    <h1>
+      AlphacodersDownloader
+    </h1>
+    <div>
+        <a href="https://www.python.org/">
+            <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Written in Python">
+        </a>
+        <a href="https://github.com/Asthowen/AlphacodersDownloader">
+            <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white" alt="Uses git">
+        </a>
+        <br>
+        <a href="https://github.com/Asthowen/AlphacodersDownloader/blob/main/LICENSE">
+            <img src="https://img.shields.io/github/license/Asthowen/AlphacodersDownloader?style=for-the-badge" alt="License">
+        </a>
+        <a href="https://github.com/Asthowen/AlphacodersDownloader/stargazers">
+            <img src="https://img.shields.io/github/stars/Asthowen/AlphacodersDownloader?style=for-the-badge" alt="Stars">
+        </a>
+        <br>
+        <a href="https://pypi.org/project/AlphacodersDownloader/">
+            <img src="https://img.shields.io/pypi/v/AlphacodersDownloader?style=for-the-badge" alt="PyPI version">
+        </a>
+        <a href="https://pypi.org/project/AlphacodersDownloader/">
+            <img src="https://img.shields.io/pypi/dd/AlphacodersDownloader?style=for-the-badge" alt="PyPI downloads">
+        </a>
+        <br>
+        <a href="https://aur.archlinux.org/packages/alphacodersdownloader/">
+            <img src="https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white" alt="Arch Linux"/>
+        </a>
+        <a href="https://github.com/Asthowen/AlphacodersDownloader/releases/latest/">
+            <img src="https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white" alt="Debian"/>
+        </a>
+        <a href="https://github.com/Asthowen/AlphacodersDownloader/releases/latest/">
+            <img src="https://img.shields.io/badge/Fedora-294172?style=for-the-badge&logo=fedora&logoColor=white" alt="Fedora"/>
+        </a>
+    </div>
+    <h3>
+        <strong>A script for download wallpapers on https://alphacoders.com/ written in Python.</strong>
+    </h3>
+</div>
 
-</p>
-<h3 align="center">
-    <strong>A script for download wallpapers on https://alphacoders.com/ written in Python.</strong>
-</h3>
-
-## Made with
-* [**BeautifulSoup4**](https://pypi.org/project/bs4/)
-* [**aiofiles**](https://pypi.org/project/aiofiles/)
-* [**aiohttp**](https://pypi.org/project/aiohttp/)
 
 ## Installation
 ### Install on Archlinux
@@ -99,7 +96,12 @@ curl https://rpm.asthowen.fr/asthowen.repo > /etc/yum.repos.d/asthowen.repo
 
 Update repositories and install package:
 ```bash
-yum check-update && yum install AlphacodersDownloader 
+yum check-update
+```
+
+And install package:
+```bash
+yum install AlphacodersDownloader 
 ```
 
 ##### With RPM file
@@ -174,7 +176,7 @@ alphacoders-downloader -S "https://mobile.alphacoders.com/by-sub-category/227264
 ## Dev
 **Before committing an update:**
 * The code must have a result of 10/10 with pylint, use the command: `pylint --recursive=y alphacoders_downloader/*`
-* The code must be cleaned with blake, run the command: `black alphacoders_downloader/ && black setup.py && black build/setup_build.py` 
+* The code must be cleaned with black, run the command: `black alphacoders_downloader/ && black setup.py && black build/setup_build.py` 
 
 ## Author
 [<img width="45" src="https://avatars3.githubusercontent.com/u/59535754?s=400&u=48aecdd175dd2dd8867ae063f1973b64d298220b&v=4" alt="Asthowen">](https://github.com/Asthowen)

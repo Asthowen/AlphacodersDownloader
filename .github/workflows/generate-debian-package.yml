@@ -11,7 +11,7 @@ permissions:
 jobs:
   generate-debian-package:
     name: Generate Debian package and publish to APT repository
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -21,9 +21,9 @@ jobs:
         run: |
           sudo apt install python3-stdeb fakeroot python-all dh-python
           cp build/setup_build.py ./
-          python3 setup_build.py sdist
-          sudo python3 setup_build.py --command-packages=stdeb.command bdist_deb
           echo "::set-output name=MODULE_VERSION::$(python3 setup_build.py --version)"
+          python3 setup_build.py --command-packages=stdeb.command sdist_dsc
+          cd deb_dist/alphacodersdownloader-$(python3 setup_build.py --version) && dpkg-buildpackage -b -us -uc
         env:
           VERSION: ${{ steps.get_release.outputs.tag_name }}
 

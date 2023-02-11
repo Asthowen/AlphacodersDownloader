@@ -1,24 +1,24 @@
 import setuptools
 
 setuptools.setup(
-    name='AlphacodersDownloader',
-    version='0.1.4.3',
-    author='Asthowen',
-    author_email='contact@asthowen.fr',
-    maintainer='Asthowen',
-    maintainer_email='contact@asthowen.fr',
-    license='GNU v3.0',
-    description='A script for download wallpapers on https://alphacoders.com written in Python.',
-    long_description='A script for download backgrounds on https://alphacoders.com written in Python.',
-    long_description_content_type='text/markdown',
-    url='https://github.com/Asthowen/AlphacodersDownloader',
+    name="AlphacodersDownloader",
+    version="0.1.4.3",
+    author="Asthowen",
+    author_email="contact@asthowen.fr",
+    maintainer="Asthowen",
+    maintainer_email="contact@asthowen.fr",
+    license="GNU v3.0",
+    description="A script for download wallpapers on https://alphacoders.com written in Python.",
+    long_description="A script for download backgrounds on https://alphacoders.com written in Python.",
+    long_description_content_type="text/markdown",
+    url="https://github.com/Asthowen/AlphacodersDownloader",
     packages=setuptools.find_packages(),
     entry_points={
         "console_scripts": [
             "alphacoders-downloader = alphacoders_downloader.alphacoders_downloader:start"
         ]
     },
-    python_requires='>= 3.6',
+    python_requires=">= 3.6",
     include_package_data=True,
-    install_requires=['aiohttp', 'aiofiles', 'setproctitle', 'beautifulsoup4']
+    install_requires=["aiohttp", "aiofiles", "setproctitle", "beautifulsoup4"],
 )
