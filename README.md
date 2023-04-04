@@ -143,13 +143,16 @@ python3 run.py
 ```
 
 ## Use
+**Currently, due to the use of CloudFlare, it is no longer possible to retrieve wallpapers directly from https://alphacoders.com. 
+So you have to go to the page of the wallpaper you want and scroll to the maximum to display all the wallpapers, you can then download the HTML file of the page.**
+
 ### With helper
 Start the script:
 ```bash
 alphacoders-downloader
 ```
 
-Enter a link: https://mobile.alphacoders.com/by-sub-category/227264 or https://wall.alphacoders.com/search.php?search=SAO for example.
+Enter the path to the previously downloaded HTML file: `./some.html` for example.
 
 Enter download path: `~/downloads/wallpapers/` for example.
 
@@ -157,9 +160,9 @@ If you want change download speed, start by typing **y** and after that, enter a
 
 ### With arguments
 #### Arguments list
-`-S` Link to the wallpaper, must be associated with the `-P` argument.
+`-F` The path to the HTML file of the page containing the wallpapers to download, must be associated with the `-P` argument.
 <br>
-`-P` The path to download wallpapers, must be associated with the `-S` argument.
+`-P` The path to download wallpapers, must be associated with the `-F` argument.
 <br>
 `-D` The download speed, it must be in Ko.
 <br>
@@ -170,7 +173,7 @@ If you want change download speed, start by typing **y** and after that, enter a
 #### Examples
 Download wallpaper in `~/downloads/wallpapers/`:
 ```bash
-alphacoders-downloader -S "https://mobile.alphacoders.com/by-sub-category/227264" -P "~/downloads/wallpapers/" -D 1024
+alphacoders-downloader -F ./some.html -P "~/downloads/wallpapers/" -D 1024
 ```
 
 ## Dev

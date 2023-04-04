@@ -1,7 +1,6 @@
 from alphacoders_downloader.util.utils import limit_tasks, clear_line, print_error
 from alphacoders_downloader.util.arguments_builder import ArgumentsBuilder
 from alphacoders_downloader.util.utils import create_folder_recursively
-from alphacoders_downloader.exceptions import WallpapersNotFounds
 from alphacoders_downloader.util.cursor import HiddenCursor, show
 from alphacoders_downloader.util.progress_bar import ProgressBar
 from alphacoders_downloader import __version__, __license__
@@ -19,9 +18,13 @@ import os
 
 class AlphacodersDownloader:
     def __init__(
-        self, url: str, path: str, size: int, client_session: aiohttp.ClientSession
+        self,
+        wallpapers_html_path: str,
+        path: str,
+        size: int,
+        client_session: aiohttp.ClientSession,
     ):
-        self.url = url
+        self.wallpapers_html_path = wallpapers_html_path
         self.path = path if path[-1] == os.sep else path + os.sep
         self.size = size
         self.client_session = client_session
@@ -45,52 +48,19 @@ class AlphacodersDownloader:
         ]
         if os.path.isfile(os.path.join(self.path, images_name_file)) is False:
             image_url = image_url.replace(images_name_file_thumb, "") + images_name_file
-            async with self.client_session.head(image_url) as request:
-                file_size = int(request.headers["Content-Length"])
-                self.total_size_to_download += file_size
+
+            try:
+                async with self.client_session.head(image_url, timeout=2) as request:
+                    file_size = int(request.headers["Content-Length"])
+                    self.total_size_to_download += file_size
+            except asyncio.TimeoutError:
+                print_error(
+                    f"Timeout when retrieving information from wallpaper: {image_url}"
+                )
+                return
 
             self.images_list.append([image_url, images_name_file, file_size])
-
-    async def parse_url(self, url: str):
-        async with self.client_session.get(
-            url, cookies={"AlphaCodersView": "paged"}
-        ) as request:
-            page = BeautifulSoup(await request.text(), "html.parser")
-
-        find_images_urls = page.find("div", {"id": "page_container"}).find_all(
-            "div", "thumb-container-big"
-        )
-
-        if find_images_urls is None:
-            raise WallpapersNotFounds(url)
-
-        for a_element in find_images_urls:
-            href = str(a_element.find("img").get("src"))
-
-            if (
-                href.startswith("https://images") or href.startswith("https://mfiles")
-            ) and href not in self.temp_images_list:
-                self.temp_images_list.append(href)
-
-        self.links_got += 1
-
-        a_elements = page.find("div", {"class": "pagination-simple center"}).find_all(
-            "a"
-        )
-        changed_element = None
-        if a_elements is not None and a_elements:
-            for a_element in a_elements:
-                if a_element.text.strip() == "Next >>":
-                    changed_element = a_element
-                    break
-        if changed_element is not None:
-            url = changed_element.get("href")
-            try:
-                url_spliced = url.split("&page=")[1]
-            except IndexError:
-                url_spliced = url.split("?page=")[1]
-
-            await self.parse_url(f"{self.url}{self.page_char}page=" + url_spliced)
+            await asyncio.sleep(0.8)
 
     async def download(self, element: list):
         path = os.path.join(self.path, element[1])
@@ -140,11 +110,31 @@ class AlphacodersDownloader:
         create_folder_recursively(self.path)
         create_folder_recursively(self.temp_path)
 
-        self.spinner.set_text("Recovery of the URLS of all the wallpapers...")
-        self.page_char = (
-            "&" if "https://mobile.alphacoders.com/" not in self.url else "?"
-        )
-        await self.parse_url(f"{self.url}{self.page_char}page=1")
+        self.spinner.set_text("Reading the HTML file...")
+        async with aiofiles.open(self.wallpapers_html_path, "r") as html_file:
+            page = BeautifulSoup(await html_file.read(), "html.parser")
+
+            try:
+                find_images_urls = page.find("div", {"id": "page_container"}).find_all(
+                    "div", "thumb-container-big"
+                )
+            except AttributeError:
+                clear_line()
+                print_error(
+                    "This HTML file does not contain any wallpaper. Stop the script..."
+                )
+                show()
+                sys.exit()
+
+            for a_element in find_images_urls:
+                href = str(a_element.find("img").get("src"))
+
+                if (
+                    href.startswith(("https://images", "https://mfiles"))
+                    and href not in self.temp_images_list
+                ):
+                    self.temp_images_list.append(href)
+
         self.spinner.set_text("Recovery of the informations about wallpapers...")
         await limit_tasks(
             10, *[self.fetch_images(element) for element in self.temp_images_list]
@@ -152,10 +142,13 @@ class AlphacodersDownloader:
         self.temp_images_list.clear()
         self.spinner.stop()
 
-        self.progress_bar = ProgressBar(
-            self.total_size_to_download, "Downloading wallpapers", speed=True
-        )
-        await limit_tasks(10, *[self.download(element) for element in self.images_list])
+        if len(self.images_list) > 0:
+            self.progress_bar = ProgressBar(
+                self.total_size_to_download, "Downloading wallpapers", speed=True
+            )
+            await limit_tasks(
+                10, *[self.download(element) for element in self.images_list]
+            )
 
         shutil.rmtree(self.temp_path)
         print("\033[1mCompleted!\033[0m")
@@ -164,15 +157,18 @@ class AlphacodersDownloader:
 class CommandsHandler:
     @staticmethod
     async def download(command_return: dict):
-        wallpapers_url = command_return["args"][command_return["args"].index("-S") + 1]
-        if "https://" not in wallpapers_url and "alphacoders.com" not in wallpapers_url:
-            print_error("This URL isn't correct.")
+        wallpapers_html_path = command_return["args"][
+            command_return["args"].index("-F") + 1
+        ]
+        if os.access(os.path.dirname(wallpapers_html_path), os.W_OK) is False:
+            print_error("The path to the HTML file of the page is incorrect.")
             sys.exit()
+
         path_to_download = command_return["args"][
             command_return["args"].index("-P") + 1
         ]
         if os.access(os.path.dirname(path_to_download), os.W_OK) is False:
-            print_error("This path isn't correct.")
+            print_error("The path to the folder for saving wallpapers is incorrect.")
             sys.exit()
 
         size = 2048
@@ -189,7 +185,7 @@ class CommandsHandler:
 
         async with aiohttp.ClientSession() as client_session:
             await AlphacodersDownloader(
-                wallpapers_url, path_to_download, size, client_session
+                wallpapers_html_path, path_to_download, size, client_session
             ).start()
 
     @staticmethod
@@ -207,12 +203,12 @@ async def main():
     setproctitle.setproctitle("AlphacodersDownloader")
 
     if len(sys.argv) <= 1:
-        url = ""
-        while "https://" not in url and "alphacoders.com" not in url:
-            url = input(
-                "Please enter the download url (e.g. "
-                "https://wall.alphacoders.com/search.php?search=sword+art+online). > "
-            ).replace(" ", "")
+        wallpapers_html_path = ""
+        while os.access(os.path.dirname(wallpapers_html_path), os.W_OK) is False:
+            wallpapers_html_path = input(
+                "Please enter the path to the HTML file of the page containing the wallpapers to download (e.g. "
+                "./some.html). > "
+            )
             clear_line()
 
         path = ""
@@ -250,7 +246,9 @@ async def main():
 
         with HiddenCursor() as _:
             async with aiohttp.ClientSession() as client_session:
-                await AlphacodersDownloader(url, path, size, client_session).start()
+                await AlphacodersDownloader(
+                    wallpapers_html_path, path, size, client_session
+                ).start()
     else:
         parser = ArgumentsBuilder(
             "A script for download wallpapers on https://alphacoders.com/.",
@@ -258,10 +256,10 @@ async def main():
         )
 
         parser.add_argument(
-            "-S",
+            "-F",
             action=CommandsHandler().download,
             description="Download wallpapers.",
-            command_usage="-S wallpapers_url -P path -D 1024",
+            command_usage="-F wallpapers-html-file -P download-path -D 1024",
         )
         parser.add_argument(
             "-V",
